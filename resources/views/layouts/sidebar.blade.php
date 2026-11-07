@@ -1421,6 +1421,7 @@ body.is-resizing .sidebar-resizer {
     });
 
     const createdKelompokId = "{{ session('created_kelompok_id') }}";
+    const currentKelompokRouteId = "{{ request()->routeIs('kelompok-urusan.show') ? (string) request()->route('id') : '' }}";
     const activeUrusan = document.querySelector('.urusan-item--active');
 
     if (createdKelompokId) {
@@ -1432,6 +1433,18 @@ body.is-resizing .sidebar-resizer {
             }, 100);
         } else if (activeUrusan) {
             setSidebarActionTarget(activeUrusan);
+        } else {
+            updateSidebarContextButtons();
+        }
+    } else if (currentKelompokRouteId) {
+        const curKelompokBlock = document.querySelector(`.kelompok-block[data-kelompok-id="${currentKelompokRouteId}"]`);
+        if (curKelompokBlock) {
+            setSidebarActionGroupTarget(curKelompokBlock);
+            if (menuWrapper) {
+                setTimeout(() => {
+                    curKelompokBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
         } else {
             updateSidebarContextButtons();
         }
@@ -1450,8 +1463,27 @@ body.is-resizing .sidebar-resizer {
     }
 
     function runSidebarContextAdd() {
-        if (!sidebarActionGroupTarget) return;
-        showInlineForm(sidebarActionGroupId);
+        if (!sidebarActionGroupTarget && !sidebarActionGroupId) return;
+        const targetId = sidebarActionGroupId || sidebarActionGroupTarget?.dataset.kelompokId;
+        
+        // Coba cari form inline baris urusan di sidebar
+        const formRow = document.getElementById('inlineFormRow' + targetId);
+        if (formRow) {
+            showInlineForm(targetId);
+        } else {
+            // Jika sub-kelompok tidak memiliki inline form row, buka modal tambah urusan
+            const modalEl = document.getElementById('modalTambahUrusan') || document.getElementById('modalTambahUrusanSidebar');
+            if (modalEl) {
+                const selectKelompok = modalEl.querySelector('select[name="kelompok_urusan_id"]') || modalEl.querySelector('input[name="kelompok_urusan_id"]');
+                if (selectKelompok && targetId) {
+                    selectKelompok.value = targetId;
+                }
+                const bsModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                bsModal.show();
+            } else {
+                openTambahUrusanModal(targetId);
+            }
+        }
     }
 
     function runSidebarAddChildGroup() {
