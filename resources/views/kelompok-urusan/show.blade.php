@@ -26,7 +26,6 @@
                     </div>
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-1">
-                            <span class="badge bg-slate-800 text-info font-monospace px-2 py-0.5" style="font-size: 0.75rem;">{{ $kelompok->kode }}</span>
                             @if($kelompok->parent)
                                 <span class="badge bg-white text-secondary border px-2 py-0.5" style="font-size: 0.72rem;">{{ $kelompok->parent->nama }}</span>
                             @endif
@@ -246,33 +245,51 @@
 <!-- Modal Tambah Urusan Baru (Super Admin) -->
 @if(auth()->check() && auth()->user()->isSuperAdmin())
 <div class="modal fade" id="modalTambahUrusan" tabindex="-1" aria-labelledby="modalTambahUrusanLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-3">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
             <form method="POST" action="{{ route('urusan.store') }}">
                 @csrf
                 <input type="hidden" name="kelompok_urusan_id" value="{{ $kelompok->id }}">
-                <div class="modal-header border-bottom py-2.5 px-3">
-                    <h6 class="modal-title fw-bold text-slate-900" id="modalTambahUrusanLabel">
-                        <i class="bi bi-plus-circle text-primary me-1.5"></i>Tambah Urusan Baru
-                    </h6>
+                
+                <div class="modal-header border-bottom py-3 px-4 bg-white">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                            <i class="bi bi-file-earmark-plus-fill fs-6"></i>
+                        </div>
+                        <h6 class="modal-title fw-bold text-slate-900 mb-0" id="modalTambahUrusanLabel" style="font-size: 0.95rem;">
+                            Tambah Urusan Baru
+                        </h6>
+                    </div>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-3.5">
-                    <div class="alert alert-light border small text-muted mb-3 py-2 px-2.5">
-                        <i class="bi bi-info-circle me-1 text-primary"></i> Urusan akan ditambahkan di bawah bidang <strong>{{ $kelompok->nama }}</strong>.
+
+                <div class="modal-body p-4 bg-white">
+                    <div class="alert alert-light border small text-secondary mb-3 py-2 px-3 rounded-3 d-flex align-items-center gap-2" style="background-color: #f8fafc !important;">
+                        <i class="bi bi-info-circle-fill text-primary fs-6"></i>
+                        <span style="font-size: 0.78rem;">Ditambahkan ke bidang <strong>{{ $kelompok->nama }}</strong>.</span>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold text-slate-800">Nama Urusan / Tabel <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_urusan" class="form-control form-control-sm text-dark" placeholder="Contoh: Jumlah Sekolah, Jumlah Tenaga Medis, dll." required>
+                        <label class="form-label small fw-semibold text-slate-700 mb-1.5" style="font-size: 0.80rem;">
+                            Nama Urusan / Tabel <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" name="nama_urusan" class="form-control form-control-sm text-dark px-3 py-2 rounded-2" placeholder="Contoh: Jumlah Sekolah, Jumlah Tenaga Medis" required style="font-size: 0.82rem; border-color: #cbd5e1;">
                     </div>
-                    <div class="mb-2">
-                        <label class="form-label small fw-semibold text-slate-800">Deskripsi Singkat</label>
-                        <textarea name="deskripsi" class="form-control form-control-sm" rows="2" placeholder="Keterangan singkat cakupan data urusan ini..."></textarea>
+
+                    <div class="mb-1">
+                        <label class="form-label small fw-semibold text-slate-700 mb-1.5" style="font-size: 0.80rem;">
+                            Deskripsi Singkat <span class="text-muted fw-normal">(Opsional)</span>
+                        </label>
+                        <textarea name="deskripsi" class="form-control form-control-sm px-3 py-2 rounded-2" rows="2" placeholder="Keterangan singkat cakupan data urusan ini..." style="font-size: 0.82rem; border-color: #cbd5e1;"></textarea>
                     </div>
                 </div>
-                <div class="modal-footer border-top py-2 px-3">
-                    <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-sm btn-primary fw-semibold px-3">Simpan Urusan</button>
+
+                <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex align-items-center justify-content-end gap-2">
+                    <button type="button" class="btn btn-sm btn-white border px-3 py-1.5 rounded-2 text-secondary fw-medium" data-bs-dismiss="modal" style="font-size: 0.80rem;">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-primary px-3.5 py-1.5 rounded-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs" style="font-size: 0.80rem;">
+                        <i class="bi bi-check2"></i>
+                        <span>Simpan Urusan</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -281,27 +298,40 @@
 
 <!-- Modal Edit Urusan (Super Admin) -->
 <div class="modal fade" id="modalEditUrusan" tabindex="-1" aria-labelledby="modalEditUrusanLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-3">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
             <form method="POST" id="formEditUrusan" action="">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="kelompok_urusan_id" value="{{ $kelompok->id }}">
-                <div class="modal-header border-bottom py-2.5 px-3">
-                    <h6 class="modal-title fw-bold text-slate-900" id="modalEditUrusanLabel">
-                        <i class="bi bi-pencil-square text-warning me-1.5"></i>Edit Urusan Pemerintahan
-                    </h6>
+                
+                <div class="modal-header border-bottom py-3 px-4 bg-white">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                            <i class="bi bi-pencil-square fs-6"></i>
+                        </div>
+                        <h6 class="modal-title fw-bold text-slate-900 mb-0" id="modalEditUrusanLabel" style="font-size: 0.95rem;">
+                            Edit Urusan Pemerintahan
+                        </h6>
+                    </div>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-3.5">
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold text-slate-800">Nama Urusan <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_urusan" id="editNamaUrusanInput" class="form-control form-control-sm text-dark" required>
+
+                <div class="modal-body p-4 bg-white">
+                    <div class="mb-1">
+                        <label class="form-label small fw-semibold text-slate-700 mb-1.5" style="font-size: 0.80rem;">
+                            Nama Urusan <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" name="nama_urusan" id="editNamaUrusanInput" class="form-control form-control-sm text-dark px-3 py-2 rounded-2" required style="font-size: 0.82rem; border-color: #cbd5e1;">
                     </div>
                 </div>
-                <div class="modal-footer border-top py-2 px-3">
-                    <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-sm btn-primary fw-semibold px-3">Simpan Perubahan</button>
+
+                <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex align-items-center justify-content-end gap-2">
+                    <button type="button" class="btn btn-sm btn-white border px-3 py-1.5 rounded-2 text-secondary fw-medium" data-bs-dismiss="modal" style="font-size: 0.80rem;">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-primary px-3.5 py-1.5 rounded-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs" style="font-size: 0.80rem;">
+                        <i class="bi bi-check2"></i>
+                        <span>Simpan Perubahan</span>
+                    </button>
                 </div>
             </form>
         </div>
