@@ -5,9 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rules\Password;
 use App\Models\User;
 use App\Models\ActivityLog;
 use App\Models\AppSetting;
+use App\Mail\ResetPasswordMail;
 
 class AuthController extends Controller
 {
@@ -24,7 +30,7 @@ class AuthController extends Controller
     }
 
     // ====================================================
-    // SUPER ADMIN LOGIN (username + password)
+    // SUPER ADMIN LOGIN (email + password)
     // ====================================================
     public function showSuperAdminLogin()
     {
@@ -43,20 +49,25 @@ class AuthController extends Controller
 
     public function superAdminLogin(Request $request)
     {
+        $identifierField = $request->has('email') ? 'email' : 'username';
+
         $request->validate([
-            'username' => 'required|string',
+            $identifierField => 'required|string',
             'password' => 'required|string',
         ], [
-            'username.required' => 'Username wajib diisi.',
+            $identifierField . '.required' => 'Alamat email wajib diisi.',
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
-        $username = trim($request->input('username'));
+        $identifier = trim($request->input('email') ?: $request->input('username'));
         $password = $request->input('password');
         $remember = $request->filled('remember');
 
-        $user = User::where('username', $username)
-            ->where('role', 'super_admin')
+        $user = User::where('role', 'super_admin')
+            ->where(function ($q) use ($identifier) {
+                $q->where('email', $identifier)
+                  ->orWhere('username', $identifier);
+            })
             ->first();
 
         if ($user && $user->is_active && Hash::check($password, $user->password)) {
@@ -68,15 +79,15 @@ class AuthController extends Controller
                 ->with('success', 'Selamat datang kembali, ' . $user->name . ' (Super Admin)!');
         }
 
-        ActivityLog::record('failed_login', 'Percobaan masuk Super Admin gagal untuk username: ' . $username . ' (IP: ' . $request->ip() . ')');
+        ActivityLog::record('failed_login', 'Percobaan masuk Super Admin gagal untuk identifier: ' . $identifier . ' (IP: ' . $request->ip() . ')');
 
         return back()->withErrors([
-            'username' => 'Username atau kata sandi salah, atau akun dinonaktifkan.',
-        ])->onlyInput('username');
+            $identifierField => 'Alamat email atau kata sandi salah, atau akun dinonaktifkan.',
+        ])->onlyInput($identifierField);
     }
 
     // ====================================================
-    // ADMIN LOGIN (username + password)
+    // ADMIN LOGIN (email + password)
     // ====================================================
     public function showAdminLogin()
     {
@@ -94,20 +105,25 @@ class AuthController extends Controller
 
     public function adminLogin(Request $request)
     {
+        $identifierField = $request->has('email') ? 'email' : 'username';
+
         $request->validate([
-            'username' => 'required|string',
+            $identifierField => 'required|string',
             'password' => 'required|string',
         ], [
-            'username.required' => 'Username wajib diisi.',
+            $identifierField . '.required' => 'Alamat email wajib diisi.',
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
-        $username = trim($request->input('username'));
+        $identifier = trim($request->input('email') ?: $request->input('username'));
         $password = $request->input('password');
         $remember = $request->filled('remember');
 
-        $user = User::where('username', $username)
-            ->whereIn('role', ['admin', 'super_admin'])
+        $user = User::whereIn('role', ['admin', 'super_admin'])
+            ->where(function ($q) use ($identifier) {
+                $q->where('email', $identifier)
+                  ->orWhere('username', $identifier);
+            })
             ->first();
 
         if ($user && $user->is_active && Hash::check($password, $user->password)) {
@@ -119,11 +135,11 @@ class AuthController extends Controller
                 ->with('success', 'Selamat datang kembali, ' . $user->name . ' (' . $user->role_label . ')!');
         }
 
-        ActivityLog::record('failed_login', 'Percobaan masuk Admin gagal untuk username: ' . $username . ' (IP: ' . $request->ip() . ')');
+        ActivityLog::record('failed_login', 'Percobaan masuk Admin gagal untuk identifier: ' . $identifier . ' (IP: ' . $request->ip() . ')');
 
         return back()->withErrors([
-            'username' => 'Username atau kata sandi salah, atau akun dinonaktifkan.',
-        ])->onlyInput('username');
+            $identifierField => 'Alamat email atau kata sandi salah, atau akun dinonaktifkan.',
+        ])->onlyInput($identifierField);
     }
 
     // ====================================================
@@ -326,5 +342,131 @@ class AuthController extends Controller
         ActivityLog::record('update_profile', 'Memperbarui profil pengguna' . (!empty($updatedParts) ? ' (' . implode(', ', $updatedParts) . ')' : ''));
 
         return back()->with('success', $message);
+    }
+
+    // ====================================================
+    // LUPA KATA SANDI (FORGOT & RESET PASSWORD VIA SMTP)
+    // ====================================================
+    public function showForgotPassword(Request $request)
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.forgot-password');
+    }
+
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ], [
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format alamat email tidak valid.',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->withErrors(['email' => 'Alamat email tidak terdaftar dalam sistem.'])->withInput();
+        }
+
+        if (!$user->is_active) {
+            return back()->withErrors(['email' => 'Akun Anda dinonaktifkan. Silakan hubungi Super Admin.'])->withInput();
+        }
+
+        $token = Str::random(64);
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => now(),
+            ]
+        );
+
+        $portal = $request->input('portal', $user->role === 'super_admin' ? 'superadmin' : ($user->role === 'admin' ? 'admin' : 'user'));
+        $resetUrl = route('password.reset', [
+            'token' => $token,
+            'email' => $user->email,
+            'portal' => $portal,
+        ]);
+
+        try {
+            Mail::to($user->email)->send(new ResetPasswordMail($user, $resetUrl));
+            ActivityLog::record('forgot_password', 'Permintaan reset kata sandi dikirim ke: ' . $user->email);
+
+            return back()->with('status', 'Tautan untuk mereset kata sandi telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.');
+        } catch (\Throwable $e) {
+            ActivityLog::record('forgot_password_failed', 'Gagal mengirim email reset kata sandi ke ' . $user->email . ': ' . $e->getMessage());
+
+            if (config('app.env') === 'local' || config('app.debug')) {
+                return back()->with('status', 'Permintaan berhasil diproses! (Mode Lokal/Dev: Anda dapat langsung membuka tautan: ' . $resetUrl . ')');
+            }
+
+            return back()->withErrors(['email' => 'Gagal mengirim email reset kata sandi. Pastikan konfigurasi SMTP telah aktif.'])->withInput();
+        }
+    }
+
+    public function showResetPassword(Request $request, $token)
+    {
+        return view('auth.reset-password', [
+            'token' => $token,
+            'email' => $request->query('email'),
+            'portal' => $request->query('portal', 'user'),
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', Password::min(8)],
+        ], [
+            'email.required' => 'Alamat email wajib diisi.',
+            'password.required' => 'Kata sandi baru wajib diisi.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
+            'password.min' => 'Kata sandi minimal 8 karakter.',
+        ]);
+
+        $record = DB::table('password_reset_tokens')->where('email', $request->email)->first();
+
+        if (!$record) {
+            return back()->withErrors(['email' => 'Tautan reset kata sandi tidak valid atau telah kadaluarsa.']);
+        }
+
+        // Cek kadaluarsa (60 menit)
+        if (Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            return back()->withErrors(['email' => 'Tautan reset kata sandi telah kadaluarsa (lebih dari 60 menit). Silakan ajukan kembali.']);
+        }
+
+        // Verifikasi token (support hashed atau direct token)
+        if (!Hash::check($request->token, $record->token) && $request->token !== $record->token) {
+            return back()->withErrors(['email' => 'Token reset kata sandi tidak valid.']);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return back()->withErrors(['email' => 'Pengguna tidak ditemukan.']);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        ActivityLog::record('password_reset_success', 'Kata sandi berhasil direset untuk: ' . $user->email);
+
+        $portal = $request->input('portal', $user->role === 'super_admin' ? 'superadmin' : ($user->role === 'admin' ? 'admin' : 'user'));
+        if ($portal === 'superadmin') {
+            $slug = AppSetting::getSuperAdminSlug();
+        } elseif ($portal === 'admin') {
+            $slug = AppSetting::getAdminSlug();
+        } else {
+            $slug = AppSetting::getUserSlug();
+        }
+
+        return redirect("/{$slug}/login")->with('success', 'Kata sandi Anda berhasil diperbarui! Silakan masuk dengan kata sandi baru.');
     }
 }

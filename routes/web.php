@@ -85,6 +85,14 @@ $registerAuthRoutes = function () {
 $registerAuthRoutes();
 
 // ====================================================
+// PASSWORD RESET ROUTES (Lupa Kata Sandi via SMTP)
+// ====================================================
+Route::get('/lupa-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/lupa-password', [AuthController::class, 'sendResetLinkEmail'])->middleware('throttle:5,1')->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:5,1')->name('password.update');
+
+// ====================================================
 // AUTHENTICATED ROUTES
 // ====================================================
 Route::middleware('auth')->group(function () {

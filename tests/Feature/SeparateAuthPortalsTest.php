@@ -6,7 +6,10 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\AppSetting;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class SeparateAuthPortalsTest extends TestCase
 {
@@ -56,24 +59,24 @@ class SeparateAuthPortalsTest extends TestCase
         AppSetting::setValue('user_login_slug', 'portal');
     }
 
-    public function test_superadmin_portal_page_loads_and_authenticates_with_username()
+    public function test_superadmin_portal_page_loads_and_authenticates_with_email()
     {
         $response = $this->get('/superadmin/login');
         $response->assertStatus(200);
         $response->assertSee('PORTAL SUPER ADMIN');
-        $response->assertSee('Username Super Admin');
+        $response->assertSee('Alamat Email');
 
         // Test failed login
         $failedResponse = $this->post('/superadmin/login', [
-            'username' => 'superadmin',
+            'email' => 'superadmin@datasektoral.go.id',
             'password' => 'wrongpassword',
         ]);
-        $failedResponse->assertSessionHasErrors('username');
+        $failedResponse->assertSessionHasErrors('email');
         $this->assertGuest();
 
-        // Test successful login
+        // Test successful login with email
         $loginResponse = $this->post('/superadmin/login', [
-            'username' => 'superadmin',
+            'email' => 'superadmin@datasektoral.go.id',
             'password' => 'password',
         ]);
         $loginResponse->assertRedirect(route('dashboard'));
@@ -81,24 +84,24 @@ class SeparateAuthPortalsTest extends TestCase
         $this->assertEquals('super_admin', auth()->user()->role);
     }
 
-    public function test_admin_portal_page_loads_and_authenticates_with_username()
+    public function test_admin_portal_page_loads_and_authenticates_with_email()
     {
         $response = $this->get('/admin/login');
         $response->assertStatus(200);
         $response->assertSee('PORTAL ADMINISTRATOR DATA');
-        $response->assertSee('Username Admin');
+        $response->assertSee('Alamat Email');
 
         // Regular user cannot login to admin portal
         $userAttempt = $this->post('/admin/login', [
-            'username' => 'user',
+            'email' => 'user@datasektoral.go.id',
             'password' => 'password',
         ]);
-        $userAttempt->assertSessionHasErrors('username');
+        $userAttempt->assertSessionHasErrors('email');
         $this->assertGuest();
 
-        // Admin login succeeds
+        // Admin login succeeds with email
         $loginResponse = $this->post('/admin/login', [
-            'username' => 'admin',
+            'email' => 'admin@datasektoral.go.id',
             'password' => 'password',
         ]);
         $loginResponse->assertRedirect(route('dashboard'));
@@ -230,5 +233,63 @@ class SeparateAuthPortalsTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Pembaruan Terakhir');
         $response->assertSee('Feed data nilai yang baru diperbarui');
+    }
+
+    public function test_forgot_password_page_loads_and_handles_reset_request()
+    {
+        Mail::fake();
+
+        $response = $this->get('/lupa-password');
+        $response->assertStatus(200);
+        $response->assertSee('Lupa Kata Sandi');
+
+        // Submit with existing email
+        $postResponse = $this->post('/lupa-password', [
+            'email' => 'admin@datasektoral.go.id',
+            'portal' => 'admin',
+        ]);
+
+        $postResponse->assertSessionHas('status');
+        $this->assertDatabaseHas('password_reset_tokens', [
+            'email' => 'admin@datasektoral.go.id',
+        ]);
+    }
+
+    public function test_password_can_be_reset_with_valid_token()
+    {
+        $token = 'test-token-12345';
+        $email = 'user@datasektoral.go.id';
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => now(),
+            ]
+        );
+
+        $showResponse = $this->get("/reset-password/{$token}?email=" . urlencode($email) . "&portal=user");
+        $showResponse->assertStatus(200);
+        $showResponse->assertSee('Atur Ulang Kata Sandi');
+
+        $updateResponse = $this->post('/reset-password', [
+            'token' => $token,
+            'email' => $email,
+            'password' => 'NewSecurePassword123',
+            'password_confirmation' => 'NewSecurePassword123',
+            'portal' => 'user',
+        ]);
+
+        $updateResponse->assertRedirect('/portal/login');
+        $updateResponse->assertSessionHas('success');
+
+        // Verify password was updated
+        $user = User::where('email', $email)->first();
+        $this->assertTrue(Hash::check('NewSecurePassword123', $user->password));
+
+        // Verify token was deleted
+        $this->assertDatabaseMissing('password_reset_tokens', [
+            'email' => $email,
+        ]);
     }
 }

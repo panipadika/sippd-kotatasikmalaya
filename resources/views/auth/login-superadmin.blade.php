@@ -161,14 +161,14 @@
         <form method="POST" action="{{ route('superadmin.login.post') }}">
             @csrf
             <div class="mb-2.5">
-                <label for="username" class="form-label small fw-semibold mb-1" style="color: #cbd5e1; font-size: 0.75rem;">Username Super Admin</label>
+                <label for="email" class="form-label small fw-semibold mb-1" style="color: #cbd5e1; font-size: 0.75rem;">Alamat Email</label>
                 <div class="input-group">
                     <span class="input-group-text border-end-0">
-                        <i class="bi bi-person-badge"></i>
+                        <i class="bi bi-envelope"></i>
                     </span>
-                    <input type="text" class="form-control border-start-0 ps-0 @error('username') is-invalid @enderror" 
-                           id="username" name="username" value="{{ old('username') }}" 
-                           placeholder="Masukkan username..." required autofocus>
+                    <input type="email" class="form-control border-start-0 ps-0 @error('email') is-invalid @enderror" 
+                           id="email" name="email" value="{{ old('email') }}" 
+                           placeholder="Masukan Email Anda" required autofocus>
                 </div>
             </div>
 
@@ -196,6 +196,9 @@
                         Ingat saya di perangkat ini
                     </label>
                 </div>
+                <a href="{{ route('password.request', ['portal' => 'superadmin']) }}" class="small text-decoration-none" style="color: #f43f5e; font-size: 0.74rem;">
+                    Lupa Kata Sandi?
+                </a>
             </div>
 
             <button type="submit" class="btn btn-submit w-100 py-2 rounded-2 d-flex align-items-center justify-content-center gap-2">

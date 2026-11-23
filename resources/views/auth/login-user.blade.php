@@ -201,6 +201,9 @@
                         Ingat saya di perangkat ini
                     </label>
                 </div>
+                <a href="{{ route('password.request', ['portal' => 'user']) }}" class="small text-decoration-none fw-semibold" style="color: #0d9488; font-size: 0.74rem;">
+                    Lupa Kata Sandi?
+                </a>
             </div>
 
             <button type="submit" class="btn btn-submit w-100 py-2 rounded-2 d-flex align-items-center justify-content-center gap-2">

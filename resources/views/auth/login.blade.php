@@ -123,6 +123,9 @@
                         Ingat saya di perangkat ini
                     </label>
                 </div>
+                <a href="{{ route('password.request') }}" class="small text-decoration-none fw-semibold" style="color: #2563eb; font-size: 0.74rem;">
+                    Lupa Kata Sandi?
+                </a>
             </div>
 
             <button type="submit" class="btn btn-primary w-100 py-2 rounded-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2" style="font-size: 0.84rem;">
