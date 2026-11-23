@@ -13,6 +13,8 @@ class SeparateAuthPortalsTest extends TestCase
     {
         parent::setUp();
 
+        \Illuminate\Support\Facades\Artisan::call('migrate');
+
         // Ensure test users exist with known credentials
         User::updateOrCreate(
             ['email' => 'superadmin@datasektoral.go.id'],
@@ -143,11 +145,11 @@ class SeparateAuthPortalsTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_access_settings_and_update_login_slugs()
+    public function test_superadmin_can_access_settings_and_update_login_slugs()
     {
-        $admin = User::where('username', 'admin')->first();
+        $superadmin = User::where('username', 'superadmin')->first();
 
-        $response = $this->actingAs($admin)->get('/pengaturan');
+        $response = $this->actingAs($superadmin)->get('/pengaturan');
         $response->assertStatus(200);
         $response->assertSee('Pengaturan URL Portal Login');
         $response->assertSee('superadmin');
@@ -155,7 +157,7 @@ class SeparateAuthPortalsTest extends TestCase
         $response->assertSee('portal');
 
         // Update slugs
-        $updateResponse = $this->actingAs($admin)->put('/pengaturan/slugs', [
+        $updateResponse = $this->actingAs($superadmin)->put('/pengaturan/slugs', [
             'superadmin_login_slug' => 'custom-superadmin',
             'admin_login_slug' => 'custom-admin',
             'user_login_slug' => 'custom-user',

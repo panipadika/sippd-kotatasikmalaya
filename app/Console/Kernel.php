@@ -12,7 +12,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Pilar 4: Otomatisasi Backup Database harian pada pukul 02:00
+        $schedule->command('db:backup --keep=14')
+            ->dailyAt('02:00')
+            ->runInBackground();
+
+        // Pilar 4: Otomatisasi Pembersihan Log Aktivitas (>180 hari) setiap hari Minggu pukul 03:00
+        $schedule->command('activity-log:prune --days=180')
+            ->weeklyOn(0, '03:00')
+            ->runInBackground();
     }
 
     /**

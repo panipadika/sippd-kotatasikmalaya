@@ -9,6 +9,8 @@ use App\Models\Tahun;
 use App\Models\KelompokUrusan;
 use App\Models\Urusan;
 use App\Models\ActivityLog;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 
 class SecurityHardeningVaTest extends TestCase
@@ -151,5 +153,71 @@ class SecurityHardeningVaTest extends TestCase
 
         $newCount = ActivityLog::where('action', 'failed_login')->count();
         $this->assertGreaterThan($initialCount, $newCount);
+    }
+
+    public function test_security_headers_are_present_in_responses(): void
+    {
+        $response = $this->get('/portal/login');
+        $response->assertStatus(200);
+
+        $response->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+        $response->assertHeader('X-Content-Type-Options', 'nosniff');
+        $response->assertHeader('X-XSS-Protection', '1; mode=block');
+        $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        $this->assertTrue($response->headers->has('Permissions-Policy'));
+        $this->assertFalse($response->headers->has('X-Powered-By'));
+    }
+
+    public function test_database_backup_command_runs_successfully(): void
+    {
+        $exitCode = Artisan::call('db:backup', ['--keep' => 5]);
+        $this->assertEquals(0, $exitCode);
+
+        $backupDir = storage_path('app/backups');
+        $this->assertTrue(File::isDirectory($backupDir));
+
+        $backupFiles = File::glob("{$backupDir}/sippd_backup_*.sql*");
+        $this->assertNotEmpty($backupFiles);
+
+        // Verify ActivityLog recorded the backup
+        $this->assertTrue(
+            ActivityLog::where('action', 'database_backup')->exists()
+        );
+
+        // Cleanup test backup files
+        foreach ($backupFiles as $file) {
+            File::delete($file);
+        }
+    }
+
+    public function test_prune_activity_logs_command_cleans_old_records(): void
+    {
+        // Insert old activity log (e.g., 200 days ago)
+        $oldLog = ActivityLog::create([
+            'user_id' => null,
+            'action' => 'old_test_action',
+            'description' => 'Log dari 200 hari lalu',
+            'ip_address' => '127.0.0.1',
+        ]);
+        $oldLog->created_at = now()->subDays(200);
+        $oldLog->save();
+
+        // Insert fresh activity log
+        $freshLog = ActivityLog::create([
+            'user_id' => null,
+            'action' => 'fresh_test_action',
+            'description' => 'Log baru hari ini',
+            'ip_address' => '127.0.0.1',
+        ]);
+
+        $exitCode = Artisan::call('activity-log:prune', ['--days' => 180]);
+        $this->assertEquals(0, $exitCode);
+
+        // Old log should be deleted, fresh log retained
+        $this->assertNull(ActivityLog::find($oldLog->id));
+        $this->assertNotNull(ActivityLog::find($freshLog->id));
+
+        // Cleanup fresh log
+        $freshLog->delete();
     }
 }
