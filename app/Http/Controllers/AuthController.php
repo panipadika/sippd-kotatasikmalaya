@@ -204,7 +204,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
-            'password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8), 'confirmed'],
+            'password' => ['required', 'string', Password::min(8), 'confirmed'],
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Alamat email wajib diisi.',
@@ -288,7 +288,7 @@ class AuthController extends Controller
 
         if ($request->filled('password')) {
             $rules['current_password'] = 'required|current_password';
-            $rules['password'] = ['required', 'string', \Illuminate\Validation\Rules\Password::min(8), 'confirmed'];
+            $rules['password'] = ['required', 'string', Password::min(8), 'confirmed'];
         }
 
         $rules['email'] = 'required|email|max:255|unique:users,email,' . $user->id;

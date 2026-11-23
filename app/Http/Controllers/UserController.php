@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -22,7 +23,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'nullable|string|max:255|alpha_dash|unique:users,username',
             'email' => 'required|email|max:255|unique:users,email',
-            'password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)],
+            'password' => ['required', 'string', Password::min(8)],
             'role' => 'required|in:super_admin,admin,user',
         ], [
             'name.required' => 'Nama pengguna wajib diisi.',
@@ -68,7 +69,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'nullable|string|max:255|alpha_dash|unique:users,username,' . $user->id,
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'password' => ['nullable', 'string', \Illuminate\Validation\Rules\Password::min(8)],
+            'password' => ['nullable', 'string', Password::min(8)],
             'role' => 'required|in:super_admin,admin,user',
             'is_active' => 'nullable|boolean',
         ], [
