@@ -12,6 +12,83 @@
 @endsection
 
 @section('content')
+<style>
+.card-body .input-group {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+.card-body .input-group:hover {
+    border-color: #cbd5e1;
+}
+.card-body .input-group:focus-within {
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+.card-body .input-group:focus-within .input-group-text i {
+    color: #0284c7 !important;
+}
+.card-body .input-group:focus-within .btn-toggle-pw {
+    color: #0284c7 !important;
+}
+.card-body .input-group:has(.is-invalid) {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+.card-body .input-group .input-group-text {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #94a3b8;
+    padding: 0.45rem 0.75rem;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+.card-body .input-group .form-control {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding: 0.45rem 0.75rem 0.45rem 0.2rem;
+    font-size: 0.85rem;
+    width: 100%;
+}
+.card-body .input-group .form-control:focus {
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+}
+.card-body .input-group .btn-toggle-pw {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #94a3b8;
+    padding: 0.45rem 0.75rem;
+    transition: color 0.15s ease, transform 0.15s ease;
+    flex-shrink: 0;
+}
+.card-body .input-group .btn-toggle-pw:hover {
+    color: #0f172a !important;
+    background: transparent !important;
+}
+.card-body .form-control:not(.input-group .form-control) {
+    border-radius: 0.5rem;
+    border-color: #e2e8f0;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.75rem;
+}
+.card-body .form-control:not(.input-group .form-control):focus {
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+</style>
 <div class="container-fluid p-0" style="max-width: 800px;">
     <div class="mb-2.5">
         <h4 class="fw-bold text-slate-900 mb-0.5" style="font-size: 1.15rem;">Pengaturan Profil & Keamanan</h4>
@@ -59,10 +136,10 @@
                         </span>
                     </div>
                     <div class="input-group">
-                        <span class="input-group-text bg-light text-muted border-end-0">
+                        <span class="input-group-text">
                             <i class="bi bi-at"></i>
                         </span>
-                        <input type="text" name="username" class="form-control font-monospace border-start-0 ps-0 @error('username') is-invalid @enderror" 
+                        <input type="text" name="username" class="form-control font-monospace @error('username') is-invalid @enderror" 
                                value="{{ old('username', $user->username) }}" 
                                placeholder="username_akun"
                                {{ $user->isAdmin() ? 'required' : '' }}>
@@ -89,31 +166,31 @@
                             <label class="form-label small fw-semibold">Kata Sandi Saat Ini</label>
                             <div class="input-group">
                                 <input type="password" name="current_password" id="current_password" class="form-control @error('current_password') is-invalid @enderror" placeholder="Masukkan kata sandi saat ini untuk konfirmasi perubahan">
-                                <button class="btn btn-outline-secondary btn-toggle-pw" type="button" data-target="current_password" style="border-color: #cbd5e1;" title="Lihat/Sembunyikan Kata Sandi">
+                                <button class="btn btn-toggle-pw" type="button" data-target="current_password" title="Lihat/Sembunyikan Kata Sandi">
                                     <i class="bi bi-eye"></i>
                                 </button>
-                                @error('current_password')
-                                    <div class="invalid-feedback small">{{ $message }}</div>
-                                @enderror
                             </div>
+                            @error('current_password')
+                                <div class="invalid-feedback d-block small mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label small fw-semibold">Kata Sandi Baru</label>
                             <div class="input-group">
                                 <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="Minimal 8 karakter">
-                                <button class="btn btn-outline-secondary btn-toggle-pw" type="button" data-target="password" style="border-color: #cbd5e1;" title="Lihat/Sembunyikan Kata Sandi">
+                                <button class="btn btn-toggle-pw" type="button" data-target="password" title="Lihat/Sembunyikan Kata Sandi">
                                     <i class="bi bi-eye"></i>
                                 </button>
-                                @error('password')
-                                    <div class="invalid-feedback small">{{ $message }}</div>
-                                @enderror
                             </div>
+                            @error('password')
+                                <div class="invalid-feedback d-block small mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label small fw-semibold">Konfirmasi Kata Sandi Baru</label>
                             <div class="input-group">
                                 <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Ulangi kata sandi baru">
-                                <button class="btn btn-outline-secondary btn-toggle-pw" type="button" data-target="password_confirmation" style="border-color: #cbd5e1;" title="Lihat/Sembunyikan Kata Sandi">
+                                <button class="btn btn-toggle-pw" type="button" data-target="password_confirmation" title="Lihat/Sembunyikan Kata Sandi">
                                     <i class="bi bi-eye"></i>
                                 </button>
                             </div>

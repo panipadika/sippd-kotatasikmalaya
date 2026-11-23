@@ -166,72 +166,113 @@
             @endif
         }
         @endif
-        .form-control {
-            font-size: 0.83rem;
-            padding: 0.42rem 0.75rem;
+        .input-group {
+            border-radius: 0.5rem !important;
+            overflow: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
             @if($isDark)
                 background-color: rgba(30, 41, 59, 0.8) !important;
-                border-color: rgba(71, 85, 105, 0.6) !important;
-                color: #f1f5f9 !important;
+                border: 1px solid rgba(71, 85, 105, 0.6) !important;
+            @else
+                background-color: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
             @endif
         }
-        @if($isDark)
-        .form-control::placeholder {
-            color: #64748b !important;
+        .input-group:hover {
+            @if($isDark)
+                border-color: rgba(148, 163, 184, 0.5) !important;
+            @else
+                border-color: #cbd5e1 !important;
+                background-color: #ffffff !important;
+            @endif
         }
-        .form-control:disabled, .form-control[readonly] {
-            background-color: rgba(15, 23, 42, 0.6) !important;
-            color: #94a3b8 !important;
-            cursor: not-allowed;
-        }
-        @endif
-        .form-control:focus {
+        .input-group:focus-within {
             @if($isSuperAdmin)
-                background-color: rgba(30, 41, 59, 0.95) !important;
                 border-color: #f43f5e !important;
-                box-shadow: 0 0 0 0.2rem rgba(244, 63, 94, 0.2) !important;
-                color: #ffffff !important;
-            @elseif($isAdmin)
+                box-shadow: 0 0 0 3.5px rgba(244, 63, 94, 0.22) !important;
                 background-color: rgba(30, 41, 59, 0.95) !important;
+            @elseif($isAdmin)
                 border-color: #3b82f6 !important;
-                box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2) !important;
-                color: #ffffff !important;
+                box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.22) !important;
+                background-color: rgba(30, 41, 59, 0.95) !important;
             @else
                 border-color: #0d9488 !important;
-                box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.2) !important;
+                box-shadow: 0 0 0 3.5px rgba(13, 148, 136, 0.18) !important;
+                background-color: #ffffff !important;
             @endif
+        }
+        .input-group:focus-within .input-group-text i {
+            @if($isSuperAdmin)
+                color: #fb7185 !important;
+            @elseif($isAdmin)
+                color: #60a5fa !important;
+            @else
+                color: #0d9488 !important;
+            @endif
+        }
+        .input-group:has(.is-invalid) {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.22) !important;
         }
         .input-group-text {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #94a3b8 !important;
+            font-size: 0.88rem;
+            padding: 0.45rem 0.75rem;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s ease;
+            flex-shrink: 0;
+        }
+        .form-control {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
             font-size: 0.83rem;
-            padding: 0.42rem 0.7rem;
-            @if($isDark)
-                background-color: rgba(30, 41, 59, 0.8) !important;
-                border-color: rgba(71, 85, 105, 0.6) !important;
-                color: #94a3b8 !important;
-            @endif
+            padding: 0.45rem 0.75rem 0.45rem 0.2rem;
+            width: 100%;
+            color: {{ $isDark ? '#f1f5f9' : '#0f172a' }} !important;
+        }
+        .form-control:focus {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            color: {{ $isDark ? '#ffffff' : '#0f172a' }} !important;
+        }
+        .form-control::placeholder {
+            color: #94a3b8 !important;
+        }
+        .form-control:disabled, .form-control[readonly] {
+            background: transparent !important;
+            color: {{ $isDark ? '#94a3b8' : '#64748b' }} !important;
+            cursor: not-allowed;
         }
         .btn-toggle-eye {
-            padding: 0.42rem 0.7rem;
-            font-size: 0.83rem;
-            transition: all 0.2s ease;
-            @if($isDark)
-                background-color: rgba(30, 41, 59, 0.8) !important;
-                border-color: rgba(71, 85, 105, 0.6) !important;
-                color: #94a3b8 !important;
-            @else
-                background-color: #f8f9fa;
-                border-color: #dee2e6;
-                color: #6c757d;
-            @endif
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            color: #94a3b8 !important;
+            padding: 0.45rem 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: color 0.15s ease, transform 0.15s ease;
+            flex-shrink: 0;
         }
-        .btn-toggle-eye:hover {
-            @if($isDark)
-                color: #f1f5f9 !important;
-                background-color: rgba(51, 65, 85, 0.8) !important;
-            @else
-                background-color: #e9ecef;
-                color: #334155;
-            @endif
+        .btn-toggle-eye:hover, .btn-toggle-eye:focus {
+            color: {{ $isDark ? '#f1f5f9' : '#0f766e' }} !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            outline: none !important;
         }
         .btn-submit {
             border: none;
@@ -328,10 +369,10 @@
             <div class="mb-2.5">
                 <label for="email" class="form-label small fw-semibold mb-1" style="font-size: 0.75rem; color: {{ $isDark ? '#cbd5e1' : '#64748b' }};">Alamat Email</label>
                 <div class="input-group">
-                    <span class="input-group-text {{ $isDark ? '' : 'bg-light' }} border-end-0 {{ $isDark ? '' : 'text-muted' }}">
+                    <span class="input-group-text">
                         <i class="bi bi-envelope"></i>
                     </span>
-                    <input type="email" class="form-control {{ $isDark ? '' : 'bg-light' }} border-start-0 ps-0 @error('email') is-invalid @enderror" 
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
                            id="email" name="email" value="{{ old('email', $email) }}" 
                            required readonly>
                 </div>
@@ -340,14 +381,14 @@
             <div class="mb-2.5">
                 <label for="password" class="form-label small fw-semibold mb-1" style="font-size: 0.75rem; color: {{ $isDark ? '#cbd5e1' : '#64748b' }};">Kata Sandi Baru</label>
                 <div class="input-group">
-                    <span class="input-group-text {{ $isDark ? '' : 'bg-light' }} border-end-0 {{ $isDark ? '' : 'text-muted' }}">
+                    <span class="input-group-text">
                         <i class="bi bi-lock"></i>
                     </span>
-                    <input type="password" class="form-control {{ $isDark ? '' : 'bg-light' }} border-start-0 border-end-0 ps-0 @error('password') is-invalid @enderror" 
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
                            id="password" name="password" 
                            placeholder="Minimal 8 karakter" required autofocus minlength="8">
-                    <button class="btn btn-toggle-eye border border-start-0" type="button" id="togglePasswordBtn">
-                        <i class="bi bi-eye" style="font-size: 0.82rem;"></i>
+                    <button class="btn btn-toggle-eye" type="button" id="togglePasswordBtn" title="Lihat/Sembunyikan Kata Sandi">
+                        <i class="bi bi-eye" style="font-size: 0.85rem;"></i>
                     </button>
                 </div>
             </div>
@@ -355,14 +396,14 @@
             <div class="mb-3">
                 <label for="password_confirmation" class="form-label small fw-semibold mb-1" style="font-size: 0.75rem; color: {{ $isDark ? '#cbd5e1' : '#64748b' }};">Konfirmasi Kata Sandi Baru</label>
                 <div class="input-group">
-                    <span class="input-group-text {{ $isDark ? '' : 'bg-light' }} border-end-0 {{ $isDark ? '' : 'text-muted' }}">
+                    <span class="input-group-text">
                         <i class="bi bi-lock-fill"></i>
                     </span>
-                    <input type="password" class="form-control {{ $isDark ? '' : 'bg-light' }} border-start-0 border-end-0 ps-0" 
+                    <input type="password" class="form-control" 
                            id="password_confirmation" name="password_confirmation" 
                            placeholder="Ulangi kata sandi baru" required minlength="8">
-                    <button class="btn btn-toggle-eye border border-start-0" type="button" id="toggleConfirmBtn">
-                        <i class="bi bi-eye" style="font-size: 0.82rem;"></i>
+                    <button class="btn btn-toggle-eye" type="button" id="toggleConfirmBtn" title="Lihat/Sembunyikan Kata Sandi">
+                        <i class="bi bi-eye" style="font-size: 0.85rem;"></i>
                     </button>
                 </div>
             </div>

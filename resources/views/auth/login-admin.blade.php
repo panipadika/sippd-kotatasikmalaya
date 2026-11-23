@@ -88,28 +88,82 @@
             align-items: center;
             gap: 0.35rem;
         }
-        .form-control {
+        .input-group {
             background-color: rgba(30, 41, 59, 0.8) !important;
-            border-color: rgba(71, 85, 105, 0.6) !important;
+            border: 1px solid rgba(71, 85, 105, 0.6) !important;
+            border-radius: 0.5rem !important;
+            overflow: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+        }
+        .input-group:hover {
+            border-color: rgba(148, 163, 184, 0.5) !important;
+        }
+        .input-group:focus-within {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.22) !important;
+            background-color: rgba(30, 41, 59, 0.95) !important;
+        }
+        .input-group:focus-within .input-group-text i {
+            color: #60a5fa !important;
+        }
+        .input-group:has(.is-invalid) {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.25) !important;
+        }
+        .input-group-text {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #94a3b8 !important;
+            font-size: 0.88rem;
+            padding: 0.45rem 0.75rem;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s ease;
+            flex-shrink: 0;
+        }
+        .form-control {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
             color: #f1f5f9 !important;
             font-size: 0.83rem;
-            padding: 0.42rem 0.75rem;
+            padding: 0.45rem 0.75rem 0.45rem 0.2rem;
+            width: 100%;
         }
         .form-control:focus {
-            background-color: rgba(30, 41, 59, 0.95) !important;
-            border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2) !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
             color: #ffffff !important;
         }
         .form-control::placeholder {
             color: #64748b !important;
         }
-        .input-group-text {
-            background-color: rgba(30, 41, 59, 0.8) !important;
-            border-color: rgba(71, 85, 105, 0.6) !important;
+        .btn-toggle-pw {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
             color: #94a3b8 !important;
-            font-size: 0.83rem;
-            padding: 0.42rem 0.7rem;
+            padding: 0.45rem 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: color 0.15s ease, transform 0.15s ease;
+            flex-shrink: 0;
+        }
+        .btn-toggle-pw:hover, .btn-toggle-pw:focus {
+            color: #f1f5f9 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            outline: none !important;
         }
         .btn-submit {
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
@@ -163,10 +217,10 @@
             <div class="mb-2.5">
                 <label for="email" class="form-label small fw-semibold mb-1" style="color: #cbd5e1; font-size: 0.75rem;">Alamat Email</label>
                 <div class="input-group">
-                    <span class="input-group-text border-end-0">
+                    <span class="input-group-text">
                         <i class="bi bi-envelope"></i>
                     </span>
-                    <input type="email" class="form-control border-start-0 ps-0 @error('email') is-invalid @enderror" 
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
                            id="email" name="email" value="{{ old('email') }}" 
                            placeholder="Masukan Email Anda" required autofocus>
                 </div>
@@ -177,14 +231,14 @@
                     <label for="password" class="form-label small fw-semibold mb-0" style="color: #cbd5e1; font-size: 0.75rem;">Kata Sandi</label>
                 </div>
                 <div class="input-group">
-                    <span class="input-group-text border-end-0">
+                    <span class="input-group-text">
                         <i class="bi bi-lock"></i>
                     </span>
-                    <input type="password" class="form-control border-start-0 ps-0 @error('password') is-invalid @enderror" 
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
                            id="password" name="password" 
                            placeholder="Masukkan kata sandi" required>
-                    <button class="btn btn-dark border border-start-0 text-slate-400 py-1 px-2.5" type="button" id="togglePasswordBtn" style="border-color: rgba(71, 85, 105, 0.6) !important; background-color: rgba(30, 41, 59, 0.8);">
-                        <i class="bi bi-eye text-secondary" style="font-size: 0.82rem;"></i>
+                    <button class="btn btn-toggle-pw" type="button" id="togglePasswordBtn" title="Lihat/Sembunyikan Kata Sandi">
+                        <i class="bi bi-eye" style="font-size: 0.85rem;"></i>
                     </button>
                 </div>
             </div>

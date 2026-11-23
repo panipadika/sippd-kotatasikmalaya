@@ -166,44 +166,88 @@
             @endif
         }
         @endif
-        .form-control {
-            font-size: 0.83rem;
-            padding: 0.42rem 0.75rem;
+        .input-group {
+            border-radius: 0.5rem !important;
+            overflow: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
             @if($isDark)
                 background-color: rgba(30, 41, 59, 0.8) !important;
-                border-color: rgba(71, 85, 105, 0.6) !important;
-                color: #f1f5f9 !important;
+                border: 1px solid rgba(71, 85, 105, 0.6) !important;
+            @else
+                background-color: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
             @endif
         }
-        @if($isDark)
-        .form-control::placeholder {
-            color: #64748b !important;
+        .input-group:hover {
+            @if($isDark)
+                border-color: rgba(148, 163, 184, 0.5) !important;
+            @else
+                border-color: #cbd5e1 !important;
+                background-color: #ffffff !important;
+            @endif
         }
-        @endif
-        .form-control:focus {
+        .input-group:focus-within {
             @if($isSuperAdmin)
-                background-color: rgba(30, 41, 59, 0.95) !important;
                 border-color: #f43f5e !important;
-                box-shadow: 0 0 0 0.2rem rgba(244, 63, 94, 0.2) !important;
-                color: #ffffff !important;
-            @elseif($isAdmin)
+                box-shadow: 0 0 0 3.5px rgba(244, 63, 94, 0.22) !important;
                 background-color: rgba(30, 41, 59, 0.95) !important;
+            @elseif($isAdmin)
                 border-color: #3b82f6 !important;
-                box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2) !important;
-                color: #ffffff !important;
+                box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.22) !important;
+                background-color: rgba(30, 41, 59, 0.95) !important;
             @else
                 border-color: #0d9488 !important;
-                box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.2) !important;
+                box-shadow: 0 0 0 3.5px rgba(13, 148, 136, 0.18) !important;
+                background-color: #ffffff !important;
             @endif
         }
-        .input-group-text {
-            font-size: 0.83rem;
-            padding: 0.42rem 0.7rem;
-            @if($isDark)
-                background-color: rgba(30, 41, 59, 0.8) !important;
-                border-color: rgba(71, 85, 105, 0.6) !important;
-                color: #94a3b8 !important;
+        .input-group:focus-within .input-group-text i {
+            @if($isSuperAdmin)
+                color: #fb7185 !important;
+            @elseif($isAdmin)
+                color: #60a5fa !important;
+            @else
+                color: #0d9488 !important;
             @endif
+        }
+        .input-group:has(.is-invalid) {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.22) !important;
+        }
+        .input-group-text {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #94a3b8 !important;
+            font-size: 0.88rem;
+            padding: 0.45rem 0.75rem;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s ease;
+            flex-shrink: 0;
+        }
+        .form-control {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 0.83rem;
+            padding: 0.45rem 0.75rem 0.45rem 0.2rem;
+            width: 100%;
+            color: {{ $isDark ? '#f1f5f9' : '#0f172a' }} !important;
+        }
+        .form-control:focus {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            color: {{ $isDark ? '#ffffff' : '#0f172a' }} !important;
+        }
+        .form-control::placeholder {
+            color: #94a3b8 !important;
         }
         .btn-submit {
             border: none;
@@ -313,10 +357,10 @@
             <div class="mb-3">
                 <label for="email" class="form-label small fw-semibold mb-1" style="font-size: 0.75rem; color: {{ $isDark ? '#cbd5e1' : '#64748b' }};">Alamat Email</label>
                 <div class="input-group">
-                    <span class="input-group-text {{ $isDark ? '' : 'bg-light' }} border-end-0 {{ $isDark ? '' : 'text-muted' }}">
+                    <span class="input-group-text">
                         <i class="bi bi-envelope"></i>
                     </span>
-                    <input type="email" class="form-control {{ $isDark ? '' : 'bg-light' }} border-start-0 ps-0 @error('email') is-invalid @enderror" 
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
                            id="email" name="email" value="{{ old('email') }}" 
                            placeholder="Masukan Email Anda" required autofocus>
                 </div>
