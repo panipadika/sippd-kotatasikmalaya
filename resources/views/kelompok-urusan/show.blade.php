@@ -127,30 +127,32 @@
 
     <!-- Search & Filter Bar -->
     <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2.5 mb-3">
-        <div class="input-group input-group-sm shadow-2xs" style="max-width: 320px;">
-            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search" style="font-size: 0.78rem;"></i></span>
+        <div class="search-box-wrapper shadow-2xs" style="max-width: 320px; width: 100%;">
+            <i class="bi bi-search search-icon"></i>
             <input type="text" 
                    id="inputSearchUrusan" 
-                   class="form-control bg-white border-start-0 ps-0 text-dark" 
+                   class="search-input" 
                    placeholder="Cari nama urusan atau tabel..." 
                    oninput="window.handleSearchUrusanCards(this.value)"
-                   style="font-size: 0.80rem;">
-            <button type="button" class="btn btn-white border border-start-0 text-muted d-none" id="btnClearSearchUrusan" onclick="window.clearSearchUrusanCards()">
-                <i class="bi bi-x"></i>
+                   autocomplete="off">
+            <button type="button" class="btn-clear-search d-none" id="btnClearSearchUrusan" onclick="window.clearSearchUrusanCards()" title="Hapus pencarian">
+                <i class="bi bi-x-circle-fill"></i>
             </button>
         </div>
 
-        <div class="d-flex align-items-center gap-1.5">
-            <span class="small text-muted me-1" id="labelCardCount" style="font-size: 0.75rem;">Menampilkan <strong>{{ $daftarUrusan->count() }}</strong> urusan</span>
-            <button type="button" class="btn btn-sm btn-white border shadow-2xs py-1 px-2.5 text-secondary filter-tab-btn active" data-filter="all" onclick="window.filterCardsByStatus('all', this)" style="font-size: 0.75rem;">
-                Semua
-            </button>
-            <button type="button" class="btn btn-sm btn-white border shadow-2xs py-1 px-2.5 text-secondary filter-tab-btn" data-filter="filled" onclick="window.filterCardsByStatus('filled', this)" style="font-size: 0.75rem;">
-                Terisi
-            </button>
-            <button type="button" class="btn btn-sm btn-white border shadow-2xs py-1 px-2.5 text-secondary filter-tab-btn" data-filter="empty" onclick="window.filterCardsByStatus('empty', this)" style="font-size: 0.75rem;">
-                Belum Terisi
-            </button>
+        <div class="d-flex align-items-center gap-2">
+            <span class="small text-muted" id="labelCardCount" style="font-size: 0.75rem;">Menampilkan <strong>{{ $daftarUrusan->count() }}</strong> urusan</span>
+            <div class="filter-tabs-group shadow-2xs">
+                <button type="button" class="filter-tab-btn active" data-filter="all" onclick="window.filterCardsByStatus('all', this)">
+                    Semua
+                </button>
+                <button type="button" class="filter-tab-btn" data-filter="filled" onclick="window.filterCardsByStatus('filled', this)">
+                    Terisi
+                </button>
+                <button type="button" class="filter-tab-btn" data-filter="empty" onclick="window.filterCardsByStatus('empty', this)">
+                    Belum Terisi
+                </button>
+            </div>
         </div>
     </div>
 
@@ -374,18 +376,93 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-.filter-tab-btn {
+.search-box-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.2rem 0.65rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+}
+.search-box-wrapper:hover {
+    border-color: #cbd5e1;
+}
+.search-box-wrapper:focus-within {
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+.search-box-wrapper:focus-within .search-icon {
+    color: #0284c7 !important;
+}
+.search-icon {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+    margin-right: 0.45rem;
+}
+.search-input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    font-size: 0.80rem;
+    color: #0f172a;
+    width: 100%;
+    padding: 0.3rem 0;
+}
+.search-input::placeholder {
+    color: #94a3b8;
+    font-size: 0.80rem;
+}
+.btn-clear-search {
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    padding: 0 0.15rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: color 0.15s ease, transform 0.15s ease;
+    flex-shrink: 0;
+}
+.btn-clear-search:hover {
+    color: #64748b;
+    transform: scale(1.1);
+}
+.filter-tabs-group {
+    display: inline-flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 3px;
+    border-radius: 0.5rem;
+    gap: 3px;
+}
+.filter-tab-btn {
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.22rem 0.7rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    line-height: 1.25;
 }
 .filter-tab-btn:hover {
-    background-color: #f1f5f9;
     color: #0f172a;
+    background-color: #e2e8f0;
 }
 .filter-tab-btn.active {
     background-color: #0284c7 !important;
     color: #ffffff !important;
-    border-color: #0284c7 !important;
+    box-shadow: 0 1px 3px rgba(2, 132, 199, 0.3) !important;
     font-weight: 600;
 }
 </style>
