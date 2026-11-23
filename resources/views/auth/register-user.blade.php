@@ -24,16 +24,23 @@
             height: 0px !important;
             display: none !important;
         }
+        html, body {
+            height: 100%;
+            height: 100vh;
+            height: 100dvh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden !important;
+        }
         body {
             font-family: 'Inter', sans-serif;
             background: radial-gradient(ellipse at center, #065f46 0%, #064e3b 35%, #042f2e 65%, #021f1d 100%);
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1rem;
             position: relative;
-            overflow-x: hidden;
+            box-sizing: border-box;
         }
         body::before {
             content: '';
@@ -63,7 +70,7 @@
             backdrop-filter: blur(16px);
             border-radius: 1rem;
             box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.6), 0 0 40px -5px rgba(16, 185, 129, 0.22);
-            max-width: 430px;
+            max-width: 395px;
             width: 100%;
             position: relative;
             z-index: 10;
@@ -102,7 +109,7 @@
     <div class="register-card p-3.5 p-sm-4">
         <div class="text-center mb-3">
             <div class="mb-2 d-flex justify-content-center">
-                <img src="{{ asset('logo.png') }}?v=2" alt="Logo Kota Tasikmalaya" style="height: 50px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));">
+                <img src="{{ asset('logo.png') }}?v=2" alt="Logo Kota Tasikmalaya" style="height: 52px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));">
             </div>
 
             <h5 class="fw-bold text-slate-900 mb-0.5" style="color: #0f172a; letter-spacing: -0.01em; font-size: 1.12rem;">Buat Akun SIPPD</h5>
@@ -120,32 +127,32 @@
             @csrf
             
             <div class="mb-2.5">
-                <label for="name" class="form-label small fw-semibold text-secondary mb-1" style="font-size: 0.74rem;">Nama Lengkap <span class="text-danger">*</span></label>
+                <label for="name" class="form-label small fw-semibold text-secondary mb-1" style="font-size: 0.74rem;">Nama Lengkap</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0 text-muted">
                         <i class="bi bi-person"></i>
                     </span>
                     <input type="text" class="form-control bg-light border-start-0 ps-0 @error('name') is-invalid @enderror" 
                            id="name" name="name" value="{{ old('name') }}" 
-                           placeholder="Nama lengkap Anda..." required autofocus>
+                           placeholder="Masukkan Nama lengkap Anda" required autofocus>
                 </div>
             </div>
 
             <div class="mb-2.5">
-                <label for="email" class="form-label small fw-semibold text-secondary mb-1" style="font-size: 0.74rem;">Alamat Email <span class="text-danger">*</span></label>
+                <label for="email" class="form-label small fw-semibold text-secondary mb-1" style="font-size: 0.74rem;">Alamat Email</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0 text-muted">
                         <i class="bi bi-envelope"></i>
                     </span>
                     <input type="email" class="form-control bg-light border-start-0 ps-0 @error('email') is-invalid @enderror" 
                            id="email" name="email" value="{{ old('email') }}" 
-                           placeholder="nama@email.com" required>
+                           placeholder="Masukkan Email Anda" required>
                 </div>
             </div>
 
             <div class="row g-2 mb-2">
                 <div class="col-12 col-sm-6">
-                    <label for="password" class="form-label small fw-semibold text-secondary mb-1" style="font-size: 0.74rem;">Kata Sandi <span class="text-danger">*</span></label>
+                    <label for="password" class="form-label small fw-semibold text-secondary mb-1" style="font-size: 0.74rem;">Kata Sandi</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0 text-muted px-2">
                             <i class="bi bi-lock"></i>
@@ -159,7 +166,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-6">
-                    <label for="password_confirmation" class="form-label small fw-semibold text-secondary mb-1" style="font-size: 0.74rem;">Konfirmasi Sandi <span class="text-danger">*</span></label>
+                    <label for="password_confirmation" class="form-label small fw-semibold text-secondary mb-1" style="font-size: 0.74rem;">Konfirmasi Sandi</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0 text-muted px-2">
                             <i class="bi bi-lock-fill"></i>
@@ -176,14 +183,13 @@
 
             <button type="submit" class="btn btn-submit w-100 py-2.5 rounded-2 d-flex align-items-center justify-content-center gap-2 mt-3.5">
                 <span>Daftar Akun Baru</span>
-                <i class="bi bi-arrow-right" style="font-size: 0.82rem;"></i>
             </button>
         </form>
 
         <div class="mt-3 pt-2.5 border-top text-center">
             <span class="small text-muted" style="font-size: 0.74rem;">Sudah memiliki akun?</span>
             <a href="{{ route('user.login') }}" class="small fw-semibold text-decoration-none ms-1" style="color: #0d9488; font-size: 0.74rem;">
-                Masuk ke Portal Pengguna &rarr;
+                Masuk
             </a>
         </div>
     </div>
