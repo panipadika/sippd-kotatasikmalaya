@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\AppSetting;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 
 class SeparateAuthPortalsTest extends TestCase
@@ -13,7 +14,7 @@ class SeparateAuthPortalsTest extends TestCase
     {
         parent::setUp();
 
-        \Illuminate\Support\Facades\Artisan::call('migrate');
+        Artisan::call('migrate');
 
         // Ensure test users exist with known credentials
         User::updateOrCreate(

@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Throwable;
 
 class DatabaseBackupCommand extends Command
 {
@@ -166,7 +167,7 @@ class DatabaseBackupCommand extends Command
 
             fclose($handle);
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->warn("Programmatic dump warning: " . $e->getMessage());
             // Jika Doctrine tidak tersedia atau terjadi error, buat minimal snapshot file dengan catatan
             file_put_contents(

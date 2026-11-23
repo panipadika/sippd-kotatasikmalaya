@@ -58,3 +58,4 @@ class PruneActivityLogsCommand extends Command
         return self::SUCCESS;
     }
 }
+

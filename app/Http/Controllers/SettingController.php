@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AppSetting;
 use App\Models\ActivityLog;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Throwable;
 
 class SettingController extends Controller
 {
@@ -66,9 +68,9 @@ class SettingController extends Controller
         AppSetting::setValue('user_login_slug', strtolower($request->user_login_slug));
 
         try {
-            \Illuminate\Support\Facades\Artisan::call('route:clear');
-            \Illuminate\Support\Facades\Artisan::call('cache:clear');
-        } catch (\Throwable $e) {
+            Artisan::call('route:clear');
+            Artisan::call('cache:clear');
+        } catch (Throwable $e) {
             // Ignore if artisan cache clear is unavailable in certain environments
         }
 

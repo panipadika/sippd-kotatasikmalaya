@@ -18,7 +18,7 @@ class SecurityHardeningVaTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        \Illuminate\Support\Facades\Artisan::call('migrate');
+        Artisan::call('migrate');
     }
 
     public function test_login_forms_do_not_contain_hardcoded_passwords(): void
