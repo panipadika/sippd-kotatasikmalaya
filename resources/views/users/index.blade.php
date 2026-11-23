@@ -250,6 +250,30 @@
 
 @push('scripts')
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: @json(session('success')),
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#0d9488',
+                timer: 3500,
+                timerProgressBar: true
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Perhatian',
+                text: @json(session('error')),
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#dc2626'
+            });
+        @endif
+    });
+
     function openEditUserModal(id, name, username, email, role, isActive) {
         document.getElementById('formEditUser').action = '/users/' + id;
         document.getElementById('editUserName').value = name;

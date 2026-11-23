@@ -296,14 +296,35 @@ class AuthController extends Controller
             $user->username = $request->username;
         }
 
+        $passwordChanged = false;
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
+            $passwordChanged = true;
         }
 
         $user->save();
 
-        ActivityLog::record('update_profile', 'Memperbarui profil pengguna');
+        // Kumpulkan daftar informasi yang berhasil diperbarui
+        $updatedParts = [];
+        if ($user->wasChanged('name')) {
+            $updatedParts[] = 'nama lengkap';
+        }
+        if ($user->wasChanged('username')) {
+            $updatedParts[] = 'username';
+        }
+        if ($user->wasChanged('email')) {
+            $updatedParts[] = 'alamat email';
+        }
+        if ($passwordChanged) {
+            $updatedParts[] = 'kata sandi';
+        }
 
-        return back()->with('success', 'Profil berhasil diperbarui!');
+        $message = !empty($updatedParts)
+            ? 'Perubahan ' . implode(', ', $updatedParts) . ' berhasil disimpan!'
+            : 'Profil berhasil diperbarui!';
+
+        ActivityLog::record('update_profile', 'Memperbarui profil pengguna' . (!empty($updatedParts) ? ' (' . implode(', ', $updatedParts) . ')' : ''));
+
+        return back()->with('success', $message);
     }
 }

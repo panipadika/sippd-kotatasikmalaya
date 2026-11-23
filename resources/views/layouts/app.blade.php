@@ -771,7 +771,7 @@
     <!-- Floating Top-Center Notification Container -->
     <div class="top-toast-container" id="topToastContainer" aria-live="polite" aria-atomic="true">
         @if(session('success'))
-            <div class="top-toast top-toast--success" role="alert" data-auto-dismiss="800">
+            <div class="top-toast top-toast--success" role="alert" data-auto-dismiss="3500">
                 <div class="top-toast-icon">
                     <i class="bi bi-check-circle-fill"></i>
                 </div>
@@ -785,7 +785,7 @@
         @endif
 
         @if(session('error'))
-            <div class="top-toast top-toast--error" role="alert" data-auto-dismiss="800">
+            <div class="top-toast top-toast--error" role="alert" data-auto-dismiss="3500">
                 <div class="top-toast-icon">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                 </div>
@@ -799,7 +799,7 @@
         @endif
 
         @if(isset($errors) && $errors->any())
-            <div class="top-toast top-toast--warning" role="alert" data-auto-dismiss="800">
+            <div class="top-toast top-toast--warning" role="alert" data-auto-dismiss="3500">
                 <div class="top-toast-icon">
                     <i class="bi bi-exclamation-circle-fill"></i>
                 </div>
