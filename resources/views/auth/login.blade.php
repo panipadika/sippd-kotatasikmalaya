@@ -24,14 +24,23 @@
             height: 0px !important;
             display: none !important;
         }
+        html, body {
+            height: 100%;
+            height: 100vh;
+            height: 100dvh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden !important;
+        }
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            position: relative;
+            box-sizing: border-box;
         }
         .login-card {
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -100,7 +109,7 @@
                     </span>
                     <input type="password" class="form-control bg-light border-start-0 ps-0 @error('password') is-invalid @enderror" 
                            id="password" name="password" 
-                           placeholder="••••••••" required>
+                           placeholder="Masukkan kata sandi" required>
                     <button class="btn btn-light border border-start-0 text-muted py-1 px-2.5" type="button" id="togglePasswordBtn">
                         <i class="bi bi-eye" style="font-size: 0.82rem;"></i>
                     </button>

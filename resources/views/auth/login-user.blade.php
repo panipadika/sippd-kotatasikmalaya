@@ -24,16 +24,23 @@
             height: 0px !important;
             display: none !important;
         }
+        html, body {
+            height: 100%;
+            height: 100vh;
+            height: 100dvh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden !important;
+        }
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #09203f 0%, #1e3a8a 50%, #0d1b2a 100%);
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1rem;
             position: relative;
-            overflow-x: hidden;
+            box-sizing: border-box;
         }
         body::before {
             content: '';
@@ -110,9 +117,24 @@
             color: #ffffff;
         }
         .register-box {
-            background: #f8fafc;
-            border: 1px dashed #cbd5e1;
+            background: rgba(240, 253, 250, 0.95);
+            border: 1px dashed rgba(13, 148, 136, 0.35);
             border-radius: 0.65rem;
+        }
+        .btn-register {
+            background-color: #ffffff;
+            border: 1.5px solid #0d9488;
+            color: #0f766e;
+            font-size: 0.77rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+        }
+        .btn-register:hover, .btn-register:focus {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
+            border-color: #0f766e !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35);
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -165,7 +187,7 @@
                     </span>
                     <input type="password" class="form-control bg-light border-start-0 ps-0 @error('password') is-invalid @enderror" 
                            id="password" name="password" 
-                           placeholder="••••••••" required>
+                           placeholder="Masukkan kata sandi" required>
                     <button class="btn btn-light border border-start-0 text-muted py-1 px-2.5" type="button" id="togglePasswordBtn">
                         <i class="bi bi-eye" style="font-size: 0.82rem;"></i>
                     </button>
@@ -190,7 +212,7 @@
         <!-- Register Section -->
         <div class="register-box p-2.5 mt-3 text-center">
             <span class="small text-muted d-block mb-1.5" style="font-size: 0.73rem;">Belum memiliki akun pengguna?</span>
-            <a href="{{ route('user.register') }}" class="btn btn-outline-primary btn-sm fw-semibold w-100 py-1.5 d-flex align-items-center justify-content-center gap-1.5 rounded-2" style="border-color: #0d9488; color: #0d9488; font-size: 0.77rem;">
+            <a href="{{ route('user.register') }}" class="btn btn-register btn-sm w-100 py-1.5 d-flex align-items-center justify-content-center gap-1.5 rounded-2">
                 <i class="bi bi-person-plus"></i>
                 <span>Daftar Akun Baru Sekarang</span>
             </a>

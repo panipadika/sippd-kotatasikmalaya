@@ -24,16 +24,23 @@
             height: 0px !important;
             display: none !important;
         }
+        html, body {
+            height: 100%;
+            height: 100vh;
+            height: 100dvh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden !important;
+        }
         body {
             font-family: 'Inter', sans-serif;
             background: radial-gradient(circle at 20% 20%, #1e1b4b 0%, #0f172a 40%, #030712 100%);
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1rem;
             position: relative;
-            overflow-x: hidden;
+            box-sizing: border-box;
         }
         body::before {
             content: '';
@@ -175,7 +182,7 @@
                     </span>
                     <input type="password" class="form-control border-start-0 ps-0 @error('password') is-invalid @enderror" 
                            id="password" name="password" 
-                           placeholder="••••••••" required>
+                           placeholder="Masukkan kata sandi" required>
                     <button class="btn btn-dark border border-start-0 text-slate-400 py-1 px-2.5" type="button" id="togglePasswordBtn" style="border-color: rgba(71, 85, 105, 0.6) !important; background-color: rgba(30, 41, 59, 0.8);">
                         <i class="bi bi-eye text-secondary" style="font-size: 0.82rem;"></i>
                     </button>
