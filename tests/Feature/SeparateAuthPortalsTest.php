@@ -292,4 +292,49 @@ class SeparateAuthPortalsTest extends TestCase
             'email' => $email,
         ]);
     }
+
+    public function test_forgot_and_reset_password_pages_adapt_to_portal_theme()
+    {
+        // 1. Super Admin Forgot Password
+        $superadminForgot = $this->get('/lupa-password?portal=superadmin');
+        $superadminForgot->assertStatus(200);
+        $superadminForgot->assertSee('PORTAL SUPER ADMIN');
+        $superadminForgot->assertSee('Lupa Kata Sandi - SIPPD Super Admin');
+        $superadminForgot->assertSee('#f43f5e');
+
+        // 2. Admin Forgot Password
+        $adminForgot = $this->get('/lupa-password?portal=admin');
+        $adminForgot->assertStatus(200);
+        $adminForgot->assertSee('PORTAL ADMINISTRATOR DATA');
+        $adminForgot->assertSee('Lupa Kata Sandi - SIPPD Admin');
+        $adminForgot->assertSee('#38bdf8');
+
+        // 3. User Forgot Password
+        $userForgot = $this->get('/lupa-password?portal=user');
+        $userForgot->assertStatus(200);
+        $userForgot->assertDontSee('PORTAL SUPER ADMIN');
+        $userForgot->assertDontSee('PORTAL ADMINISTRATOR DATA');
+        $userForgot->assertSee('Lupa Kata Sandi - SIPPD Kota Tasikmalaya');
+        $userForgot->assertSee('#0d9488');
+
+        // Reset Password tests
+        $token = 'portal-theme-token';
+        $email = 'superadmin@datasektoral.go.id';
+
+        $superadminReset = $this->get("/reset-password/{$token}?email=" . urlencode($email) . "&portal=superadmin");
+        $superadminReset->assertStatus(200);
+        $superadminReset->assertSee('PORTAL SUPER ADMIN');
+        $superadminReset->assertSee('Atur Ulang Kata Sandi - SIPPD Super Admin');
+
+        $adminReset = $this->get("/reset-password/{$token}?email=" . urlencode($email) . "&portal=admin");
+        $adminReset->assertStatus(200);
+        $adminReset->assertSee('PORTAL ADMINISTRATOR DATA');
+        $adminReset->assertSee('Atur Ulang Kata Sandi - SIPPD Admin');
+
+        $userReset = $this->get("/reset-password/{$token}?email=" . urlencode($email) . "&portal=user");
+        $userReset->assertStatus(200);
+        $userReset->assertDontSee('PORTAL SUPER ADMIN');
+        $userReset->assertDontSee('PORTAL ADMINISTRATOR DATA');
+        $userReset->assertSee('Atur Ulang Kata Sandi - SIPPD Kota Tasikmalaya');
+    }
 }

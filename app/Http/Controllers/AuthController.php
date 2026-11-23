@@ -352,7 +352,9 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
-        return view('auth.forgot-password');
+        return view('auth.forgot-password', [
+            'portal' => $request->query('portal', 'user'),
+        ]);
     }
 
     public function sendResetLinkEmail(Request $request)
