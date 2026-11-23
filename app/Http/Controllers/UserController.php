@@ -22,7 +22,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'nullable|string|max:255|alpha_dash|unique:users,username',
             'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:6',
+            'password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)],
             'role' => 'required|in:super_admin,admin,user',
         ], [
             'name.required' => 'Nama pengguna wajib diisi.',
@@ -31,7 +31,7 @@ class UserController extends Controller
             'email.required' => 'Email wajib diisi.',
             'email.unique' => 'Email sudah terdaftar.',
             'password.required' => 'Kata sandi wajib diisi.',
-            'password.min' => 'Kata sandi minimal 6 karakter.',
+            'password.min' => 'Kata sandi minimal 8 karakter.',
             'role.in' => 'Peran pengguna tidak valid.',
         ]);
 
@@ -68,7 +68,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'nullable|string|max:255|alpha_dash|unique:users,username,' . $user->id,
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6',
+            'password' => ['nullable', 'string', \Illuminate\Validation\Rules\Password::min(8)],
             'role' => 'required|in:super_admin,admin,user',
             'is_active' => 'nullable|boolean',
         ], [
@@ -76,6 +76,7 @@ class UserController extends Controller
             'username.unique' => 'Username sudah digunakan oleh akun lain.',
             'username.alpha_dash' => 'Username hanya boleh huruf, angka, dash, dan underscore.',
             'email.required' => 'Email wajib diisi.',
+            'password.min' => 'Kata sandi minimal 8 karakter.',
             'role.in' => 'Peran pengguna tidak valid.',
         ]);
 
@@ -94,6 +95,9 @@ class UserController extends Controller
         $user->email = $validated['email'];
         $user->role = $validated['role'];
         $user->is_active = $request->has('is_active');
+        if (!$user->is_active && method_exists($user, 'tokens')) {
+            $user->tokens()->delete();
+        }
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);

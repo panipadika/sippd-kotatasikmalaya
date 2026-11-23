@@ -63,7 +63,10 @@ class DashboardController extends Controller
         $kelompokStats = $this->buildKelompokStats($rootKelompoks, $childrenByParent, $leafCountsMap, $filledUrusanMap);
 
         // 5. Tren kelengkapan data per tahun (hanya tahun-tahun aktif sistem)
-        $semuaTahun = Tahun::syncActiveYearsFromSystem()->sortBy('tahun');
+        $semuaTahun = Tahun::where('status_aktif', true)->orderBy('tahun')->get();
+        if ($semuaTahun->isEmpty()) {
+            $semuaTahun = Tahun::orderBy('tahun')->get();
+        }
         $chartTahuns = [];
         $chartDataCounts = [];
 
@@ -139,7 +142,6 @@ class DashboardController extends Controller
         }
 
         if ($tahun) {
-            session(['selected_tahun' => $tahun->tahun]);
             return [$tahun, $tahun->id, $tahun->tahun];
         }
 

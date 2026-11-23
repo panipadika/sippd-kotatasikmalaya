@@ -10,10 +10,11 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Super Admin (Akses Penuh: Kelola Pengguna, Master Struktur, Master Tahun, Audit Log)
-        $superAdminPassword = env('SUPERADMIN_DEFAULT_PASSWORD', 'password');
-        $adminPassword = env('ADMIN_DEFAULT_PASSWORD', 'password');
-        $userPassword = env('USER_DEFAULT_PASSWORD', 'password');
+        // 1. Super Admin, Admin, and User credentials from ENV or secure fallback
+        $defaultPassword = app()->environment('local', 'testing') ? 'password' : \Illuminate\Support\Str::random(16);
+        $superAdminPassword = env('SUPERADMIN_DEFAULT_PASSWORD', $defaultPassword);
+        $adminPassword = env('ADMIN_DEFAULT_PASSWORD', $defaultPassword);
+        $userPassword = env('USER_DEFAULT_PASSWORD', $defaultPassword);
 
         User::updateOrCreate(
             ['email' => 'superadmin@datasektoral.go.id'],

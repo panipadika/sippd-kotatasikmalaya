@@ -172,7 +172,7 @@
                     <div class="row g-2 mb-3">
                         <div class="col-6">
                             <label class="form-label small fw-semibold">Kata Sandi <span class="text-danger">*</span></label>
-                            <input type="password" name="password" class="form-control" required minlength="6" placeholder="Minimal 6 karakter">
+                            <input type="password" name="password" class="form-control" required minlength="8" placeholder="Minimal 8 karakter">
                         </div>
                         <div class="col-6">
                             <label class="form-label small fw-semibold">Peran Sistem <span class="text-danger">*</span></label>

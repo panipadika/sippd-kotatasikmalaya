@@ -298,14 +298,15 @@ class UrusanController extends Controller
             $selectedTahunNomor = in_array($activeTableYear, $allAvailableYears, true) ? $activeTableYear : end($allAvailableYears);
         }
 
-        $tahun = Tahun::where('tahun', $selectedTahunNomor)->first()
-            ?: Tahun::firstOrCreate(['tahun' => (int) $selectedTahunNomor], ['status_aktif' => true, 'is_default' => false]);
+        $tahun = Tahun::where('tahun', $selectedTahunNomor)->first();
+        if (!$tahun) {
+            $tahun = Tahun::where('status_aktif', true)->where('is_default', true)->first()
+                ?: Tahun::where('status_aktif', true)->orderByDesc('tahun')->first();
+        }
 
+        $selectedTahunId = $tahun ? $tahun->id : null;
         if ($tahun) {
-            session(['selected_tahun' => $tahun->tahun]);
-            $selectedTahunId = $tahun->id;
-        } else {
-            $selectedTahunId = null;
+            $selectedTahunNomor = $tahun->tahun;
         }
 
         $search = $request->get('search');

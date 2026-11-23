@@ -13,9 +13,11 @@ return new class extends Migration
     public function up(): void
     {
         // Ubah default role menjadi 'user'
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('user')->change();
-        });
+        if (DB::getDriverName() !== 'sqlite') {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('role')->default('user')->change();
+            });
+        }
 
         // Migrasi data pengguna lama:
         // 'operator' diubah menjadi 'user'
@@ -29,9 +31,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('admin')->change();
-        });
+        if (DB::getDriverName() !== 'sqlite') {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('role')->default('admin')->change();
+            });
+        }
 
         DB::table('users')
             ->where('role', 'user')

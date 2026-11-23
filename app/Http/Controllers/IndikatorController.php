@@ -121,7 +121,14 @@ class IndikatorController extends Controller
 
     public function show($id)
     {
-        $indikator = Indikator::with(['urusan', 'parent', 'children', 'dataIndikators.tahun'])->findOrFail($id);
+        $indikator = Indikator::with(['urusan', 'parent', 'children', 'dataIndikators.tahun'])->find($id);
+
+        if (!$indikator) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Indikator tidak ditemukan.',
+            ], 404);
+        }
 
         $tahuns = Tahun::where('status_aktif', true)->orderBy('tahun')->get();
         $historyData = [];
@@ -385,8 +392,14 @@ class IndikatorController extends Controller
 
         if ($field === 'col_nilai' || strtolower($field) === 'nilai') {
             $valTrim = trim($value ?? '');
-            if ($valTrim !== '') {
+            if ($valTrim !== '' && $valTrim !== '-') {
                 $normalized = str_replace(',', '.', $valTrim);
+                if (!is_numeric($normalized)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Nilai harus berupa angka valid (contoh: 10, 10.5, atau 10,5).',
+                    ], 422);
+                }
                 $data->nilai = $normalized;
             } else {
                 $data->nilai = null;
@@ -409,6 +422,24 @@ class IndikatorController extends Controller
                 'value' => $data->sumber_data ?? '',
                 'display' => $data->sumber_data ?? '',
             ]);
+        }
+
+        // Check if custom column requires numeric value
+        $isNumericCol = ($colDef && (($colDef['type'] ?? '') === 'number'))
+            || ($colDef && preg_match('/^(19|20)\d{2}$/', trim($colDef['name'] ?? '')));
+
+        if ($isNumericCol && $value !== null) {
+            $valTrim = trim($value);
+            if ($valTrim !== '' && $valTrim !== '-') {
+                $normalized = str_replace(',', '.', $valTrim);
+                if (!is_numeric($normalized)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Nilai pada kolom "' . ($colDef['name'] ?? 'angka') . '" harus berupa angka valid.',
+                    ], 422);
+                }
+                $value = $normalized;
+            }
         }
 
         // Custom fields by column ID

@@ -152,7 +152,7 @@
                         </span>
                         <input type="password" class="form-control bg-light border-start-0 border-end-0 px-1.5 @error('password') is-invalid @enderror" 
                                id="password" name="password" 
-                               placeholder="Min. 6 digit" minlength="6" required>
+                               placeholder="Min. 8 karakter" minlength="8" required>
                         <button class="btn btn-light border border-start-0 text-muted px-2 py-1" type="button" id="togglePasswordBtn" title="Lihat kata sandi">
                             <i class="bi bi-eye" style="font-size: 0.82rem;"></i>
                         </button>
@@ -166,7 +166,7 @@
                         </span>
                         <input type="password" class="form-control bg-light border-start-0 border-end-0 px-1.5" 
                                id="password_confirmation" name="password_confirmation" 
-                               placeholder="Ulangi sandi" minlength="6" required>
+                               placeholder="Ulangi sandi" minlength="8" required>
                         <button class="btn btn-light border border-start-0 text-muted px-2 py-1" type="button" id="togglePasswordConfirmBtn" title="Lihat konfirmasi sandi">
                             <i class="bi bi-eye" style="font-size: 0.82rem;"></i>
                         </button>

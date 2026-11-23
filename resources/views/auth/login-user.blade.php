@@ -150,7 +150,7 @@
                         <i class="bi bi-envelope"></i>
                     </span>
                     <input type="email" class="form-control bg-light border-start-0 ps-0 @error('email') is-invalid @enderror" 
-                           id="email" name="email" value="{{ old('email', 'user@datasektoral.go.id') }}" 
+                           id="email" name="email" value="{{ old('email') }}" 
                            placeholder="nama@email.com" required autofocus>
                 </div>
             </div>
@@ -164,7 +164,7 @@
                         <i class="bi bi-lock"></i>
                     </span>
                     <input type="password" class="form-control bg-light border-start-0 ps-0 @error('password') is-invalid @enderror" 
-                           id="password" name="password" value="password" 
+                           id="password" name="password" 
                            placeholder="••••••••" required>
                     <button class="btn btn-light border border-start-0 text-muted py-1 px-2.5" type="button" id="togglePasswordBtn">
                         <i class="bi bi-eye" style="font-size: 0.82rem;"></i>

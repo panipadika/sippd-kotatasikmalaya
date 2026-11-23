@@ -129,6 +129,10 @@
                 <img src="{{ asset('logo.png') }}?v=2" alt="Logo Kota Tasikmalaya" style="height: 52px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));">
             </div>
 
+            <div class="mb-1.5">
+                <span class="portal-badge"><i class="bi bi-shield-lock-fill"></i> PORTAL ADMINISTRATOR DATA</span>
+            </div>
+
             <h5 class="fw-bold text-white mb-0.5" style="letter-spacing: -0.01em; font-size: 1.12rem;">SIPPD KOTA TASIKMALAYA</h5>
             <p class="small mb-0" style="color: #94a3b8; font-size: 0.74rem;">Pengelolaan Data Sektoral & Indikator Pembangunan</p>
         </div>
@@ -156,7 +160,7 @@
                         <i class="bi bi-person-badge"></i>
                     </span>
                     <input type="text" class="form-control border-start-0 ps-0 @error('username') is-invalid @enderror" 
-                           id="username" name="username" value="{{ old('username', 'admin') }}" 
+                           id="username" name="username" value="{{ old('username') }}" 
                            placeholder="Masukkan username..." required autofocus>
                 </div>
             </div>
@@ -170,7 +174,7 @@
                         <i class="bi bi-lock"></i>
                     </span>
                     <input type="password" class="form-control border-start-0 ps-0 @error('password') is-invalid @enderror" 
-                           id="password" name="password" value="password" 
+                           id="password" name="password" 
                            placeholder="••••••••" required>
                     <button class="btn btn-dark border border-start-0 text-slate-400 py-1 px-2.5" type="button" id="togglePasswordBtn" style="border-color: rgba(71, 85, 105, 0.6) !important; background-color: rgba(30, 41, 59, 0.8);">
                         <i class="bi bi-eye text-secondary" style="font-size: 0.82rem;"></i>

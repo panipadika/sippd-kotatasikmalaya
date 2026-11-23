@@ -62,9 +62,19 @@
                     <small class="text-muted d-block mb-3">Kosongkan jika Anda tidak ingin mengubah kata sandi.</small>
 
                     <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Kata Sandi Saat Ini</label>
+                            <input type="password" name="current_password" class="form-control @error('current_password') is-invalid @enderror" placeholder="Masukkan kata sandi saat ini untuk konfirmasi perubahan">
+                            @error('current_password')
+                                <div class="invalid-feedback small">{{ $message }}</div>
+                            @enderror
+                        </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label small fw-semibold">Kata Sandi Baru</label>
-                            <input type="password" name="password" class="form-control" placeholder="Minimal 6 karakter">
+                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Minimal 8 karakter">
+                            @error('password')
+                                <div class="invalid-feedback small">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label small fw-semibold">Konfirmasi Kata Sandi Baru</label>

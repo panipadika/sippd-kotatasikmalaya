@@ -73,7 +73,8 @@
                                         $badgeClass = 'bg-secondary';
                                         if (str_contains($log->action, 'create')) $badgeClass = 'bg-success';
                                         elseif (str_contains($log->action, 'update')) $badgeClass = 'bg-primary';
-                                        elseif (str_contains($log->action, 'delete')) $badgeClass = 'bg-danger';
+                                        elseif (str_contains($log->action, 'delete') || str_contains($log->action, 'failed')) $badgeClass = 'bg-danger';
+                                        elseif (str_contains($log->action, 'login') || str_contains($log->action, 'logout')) $badgeClass = 'bg-info text-dark';
                                         elseif (str_contains($log->action, 'import')) $badgeClass = 'bg-info text-dark';
                                     @endphp
                                     <span class="badge {{ $badgeClass }} small font-monospace">

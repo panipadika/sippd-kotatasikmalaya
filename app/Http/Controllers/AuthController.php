@@ -68,6 +68,8 @@ class AuthController extends Controller
                 ->with('success', 'Selamat datang kembali, ' . $user->name . ' (Super Admin)!');
         }
 
+        ActivityLog::record('failed_login', 'Percobaan masuk Super Admin gagal untuk username: ' . $username . ' (IP: ' . $request->ip() . ')');
+
         return back()->withErrors([
             'username' => 'Username atau kata sandi salah, atau akun dinonaktifkan.',
         ])->onlyInput('username');
@@ -117,6 +119,8 @@ class AuthController extends Controller
                 ->with('success', 'Selamat datang kembali, ' . $user->name . ' (' . $user->role_label . ')!');
         }
 
+        ActivityLog::record('failed_login', 'Percobaan masuk Admin gagal untuk username: ' . $username . ' (IP: ' . $request->ip() . ')');
+
         return back()->withErrors([
             'username' => 'Username atau kata sandi salah, atau akun dinonaktifkan.',
         ])->onlyInput('username');
@@ -161,6 +165,8 @@ class AuthController extends Controller
                 ->with('success', 'Selamat datang kembali, ' . $user->name . '!');
         }
 
+        ActivityLog::record('failed_login', 'Percobaan masuk Pengguna gagal untuk email: ' . $email . ' (IP: ' . $request->ip() . ')');
+
         return back()->withErrors([
             'email' => 'Email atau kata sandi salah, atau akun belum diaktifkan.',
         ])->onlyInput('email');
@@ -182,14 +188,14 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8), 'confirmed'],
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Alamat email wajib diisi.',
             'email.email' => 'Format alamat email tidak valid.',
             'email.unique' => 'Email sudah terdaftar. Silakan gunakan email lain atau masuk.',
             'password.required' => 'Kata sandi wajib diisi.',
-            'password.min' => 'Kata sandi minimal 6 karakter.',
+            'password.min' => 'Kata sandi minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
@@ -254,14 +260,20 @@ class AuthController extends Controller
 
         $rules = [
             'name' => 'required|string|max:255',
-            'password' => 'nullable|min:6|confirmed',
         ];
 
         $messages = [
             'name.required' => 'Nama lengkap wajib diisi.',
-            'password.min' => 'Kata sandi minimal 6 karakter.',
+            'current_password.required' => 'Kata sandi saat ini wajib diisi untuk mengubah kata sandi.',
+            'current_password.current_password' => 'Kata sandi saat ini salah.',
+            'password.min' => 'Kata sandi baru minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi kata sandi baru tidak cocok.',
         ];
+
+        if ($request->filled('password')) {
+            $rules['current_password'] = 'required|current_password';
+            $rules['password'] = ['required', 'string', \Illuminate\Validation\Rules\Password::min(8), 'confirmed'];
+        }
 
         $rules['email'] = 'required|email|max:255|unique:users,email,' . $user->id;
         $messages['email.required'] = 'Alamat email wajib diisi.';
