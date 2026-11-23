@@ -269,6 +269,25 @@ class SeparateAuthPortalsTest extends TestCase
         ]);
     }
 
+    public function test_kelompok_urusan_view_contains_status_filter()
+    {
+        $admin = User::where('role', 'admin')->first();
+        $kelompok = \App\Models\KelompokUrusan::first();
+
+        if (!$kelompok) {
+            $kelompok = \App\Models\KelompokUrusan::create([
+                'kode' => '1',
+                'nama' => 'Urusan Wajib Pelayanan Dasar',
+            ]);
+        }
+
+        $response = $this->actingAs($admin)->get(route('kelompok-urusan.show', $kelompok->id));
+        $response->assertStatus(200);
+        $response->assertSee('data-filter="filled"', false);
+        $response->assertSee('data-filter="empty"', false);
+        $response->assertSee('window.filterCardsByStatus', false);
+    }
+
     public function test_logout_redirects_to_respective_portal_login()
     {
         $superadmin = User::where('username', 'superadmin')->first();

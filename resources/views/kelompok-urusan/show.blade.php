@@ -133,22 +133,22 @@
                    id="inputSearchUrusan" 
                    class="form-control bg-white border-start-0 ps-0 text-dark" 
                    placeholder="Cari nama urusan atau tabel..." 
-                   oninput="handleSearchUrusanCards(this.value)"
+                   oninput="window.handleSearchUrusanCards(this.value)"
                    style="font-size: 0.80rem;">
-            <button type="button" class="btn btn-white border border-start-0 text-muted d-none" id="btnClearSearchUrusan" onclick="clearSearchUrusanCards()">
+            <button type="button" class="btn btn-white border border-start-0 text-muted d-none" id="btnClearSearchUrusan" onclick="window.clearSearchUrusanCards()">
                 <i class="bi bi-x"></i>
             </button>
         </div>
 
         <div class="d-flex align-items-center gap-1.5">
             <span class="small text-muted me-1" id="labelCardCount" style="font-size: 0.75rem;">Menampilkan <strong>{{ $daftarUrusan->count() }}</strong> urusan</span>
-            <button type="button" class="btn btn-sm btn-white border shadow-2xs py-1 px-2.5 text-secondary filter-tab-btn active" data-filter="all" onclick="filterCardsByStatus('all', this)" style="font-size: 0.75rem;">
+            <button type="button" class="btn btn-sm btn-white border shadow-2xs py-1 px-2.5 text-secondary filter-tab-btn active" data-filter="all" onclick="window.filterCardsByStatus('all', this)" style="font-size: 0.75rem;">
                 Semua
             </button>
-            <button type="button" class="btn btn-sm btn-white border shadow-2xs py-1 px-2.5 text-secondary filter-tab-btn" data-filter="filled" onclick="filterCardsByStatus('filled', this)" style="font-size: 0.75rem;">
+            <button type="button" class="btn btn-sm btn-white border shadow-2xs py-1 px-2.5 text-secondary filter-tab-btn" data-filter="filled" onclick="window.filterCardsByStatus('filled', this)" style="font-size: 0.75rem;">
                 Terisi
             </button>
-            <button type="button" class="btn btn-sm btn-white border shadow-2xs py-1 px-2.5 text-secondary filter-tab-btn" data-filter="empty" onclick="filterCardsByStatus('empty', this)" style="font-size: 0.75rem;">
+            <button type="button" class="btn btn-sm btn-white border shadow-2xs py-1 px-2.5 text-secondary filter-tab-btn" data-filter="empty" onclick="window.filterCardsByStatus('empty', this)" style="font-size: 0.75rem;">
                 Belum Terisi
             </button>
         </div>
@@ -374,6 +374,14 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+.filter-tab-btn {
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.filter-tab-btn:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
 .filter-tab-btn.active {
     background-color: #0284c7 !important;
     color: #ffffff !important;
@@ -383,84 +391,109 @@
 </style>
 
 <script>
-let currentFilterStatus = 'all';
+(function () {
+    window.currentFilterStatus = 'all';
 
-function handleSearchUrusanCards(query) {
-    const q = (query || '').toLowerCase().trim();
-    const clearBtn = document.getElementById('btnClearSearchUrusan');
-    if (clearBtn) {
-        if (q.length > 0) {
-            clearBtn.classList.remove('d-none');
-        } else {
-            clearBtn.classList.add('d-none');
+    window.handleSearchUrusanCards = function(query) {
+        const q = (query || '').toLowerCase().trim();
+        const clearBtn = document.getElementById('btnClearSearchUrusan');
+        if (clearBtn) {
+            if (q.length > 0) {
+                clearBtn.classList.remove('d-none');
+            } else {
+                clearBtn.classList.add('d-none');
+            }
         }
-    }
-    applyFilterAndSearch();
-}
+        window.applyFilterAndSearch();
+    };
 
-function clearSearchUrusanCards() {
-    const input = document.getElementById('inputSearchUrusan');
-    if (input) {
-        input.value = '';
-        input.focus();
-    }
-    const clearBtn = document.getElementById('btnClearSearchUrusan');
-    if (clearBtn) clearBtn.classList.add('d-none');
-    applyFilterAndSearch();
-}
-
-function filterCardsByStatus(status, btnElem) {
-    currentFilterStatus = status;
-    document.querySelectorAll('.filter-tab-btn').forEach(btn => btn.classList.remove('active'));
-    if (btnElem) btnElem.classList.add('active');
-    applyFilterAndSearch();
-}
-
-function applyFilterAndSearch() {
-    const q = (document.getElementById('inputSearchUrusan')?.value || '').toLowerCase().trim();
-    const items = document.querySelectorAll('.urusan-card-item');
-    let visibleCount = 0;
-
-    items.forEach(item => {
-        const name = item.getAttribute('data-nama') || '';
-        const status = item.getAttribute('data-status') || '';
-
-        const matchesQuery = !q || name.includes(q);
-        const matchesStatus = currentFilterStatus === 'all' || status === currentFilterStatus;
-
-        if (matchesQuery && matchesStatus) {
-            item.classList.remove('d-none');
-            visibleCount++;
-        } else {
-            item.classList.add('d-none');
+    window.clearSearchUrusanCards = function() {
+        const input = document.getElementById('inputSearchUrusan');
+        if (input) {
+            input.value = '';
+            input.focus();
         }
+        const clearBtn = document.getElementById('btnClearSearchUrusan');
+        if (clearBtn) clearBtn.classList.add('d-none');
+
+        window.currentFilterStatus = 'all';
+        document.querySelectorAll('.filter-tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-filter') === 'all');
+        });
+
+        window.applyFilterAndSearch();
+    };
+
+    window.filterCardsByStatus = function(status, btnElem) {
+        window.currentFilterStatus = status;
+        document.querySelectorAll('.filter-tab-btn').forEach(btn => btn.classList.remove('active'));
+        if (btnElem) {
+            btnElem.classList.add('active');
+        } else {
+            const targetBtn = document.querySelector(`.filter-tab-btn[data-filter="${status}"]`);
+            if (targetBtn) targetBtn.classList.add('active');
+        }
+        window.applyFilterAndSearch();
+    };
+
+    window.applyFilterAndSearch = function() {
+        const q = (document.getElementById('inputSearchUrusan')?.value || '').toLowerCase().trim();
+        const items = document.querySelectorAll('.urusan-card-item');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const name = item.getAttribute('data-nama') || '';
+            const status = item.getAttribute('data-status') || '';
+
+            const matchesQuery = !q || name.includes(q);
+            const matchesStatus = (window.currentFilterStatus === 'all') || (status === window.currentFilterStatus);
+
+            if (matchesQuery && matchesStatus) {
+                item.classList.remove('d-none');
+                item.style.display = '';
+                visibleCount++;
+            } else {
+                item.classList.add('d-none');
+                item.style.display = 'none';
+            }
+        });
+
+        const countLabel = document.getElementById('labelCardCount');
+        if (countLabel) {
+            countLabel.innerHTML = `Menampilkan <strong>${visibleCount}</strong> urusan`;
+        }
+
+        const emptyState = document.getElementById('emptySearchCardsState');
+        if (emptyState) {
+            if (visibleCount === 0 && items.length > 0) {
+                emptyState.classList.remove('d-none');
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.classList.add('d-none');
+                emptyState.style.display = 'none';
+            }
+        }
+    };
+
+    window.openModalEditUrusan = function(id, nama, icon) {
+        const form = document.getElementById('formEditUrusan');
+        if (form) form.action = `/urusan/${id}`;
+        const nameInput = document.getElementById('editNamaUrusanInput');
+        if (nameInput) nameInput.value = nama;
+        const iconInput = document.getElementById('editIconUrusanInput');
+        if (iconInput) iconInput.value = icon || 'bi-table';
+
+        const modal = new bootstrap.Modal(document.getElementById('modalEditUrusan'));
+        modal.show();
+    };
+
+    // Bind event listeners to filter buttons
+    document.querySelectorAll('.filter-tab-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const filter = this.getAttribute('data-filter') || 'all';
+            window.filterCardsByStatus(filter, this);
+        });
     });
-
-    const countLabel = document.getElementById('labelCardCount');
-    if (countLabel) {
-        countLabel.innerHTML = `Menampilkan <strong>${visibleCount}</strong> urusan`;
-    }
-
-    const emptyState = document.getElementById('emptySearchCardsState');
-    if (emptyState) {
-        if (visibleCount === 0 && items.length > 0) {
-            emptyState.classList.remove('d-none');
-        } else {
-            emptyState.classList.add('d-none');
-        }
-    }
-}
-
-function openModalEditUrusan(id, nama, icon) {
-    const form = document.getElementById('formEditUrusan');
-    if (form) form.action = `/urusan/${id}`;
-    const nameInput = document.getElementById('editNamaUrusanInput');
-    if (nameInput) nameInput.value = nama;
-    const iconInput = document.getElementById('editIconUrusanInput');
-    if (iconInput) iconInput.value = icon || 'bi-table';
-
-    const modal = new bootstrap.Modal(document.getElementById('modalEditUrusan'));
-    modal.show();
-}
+})();
 </script>
 @endsection
