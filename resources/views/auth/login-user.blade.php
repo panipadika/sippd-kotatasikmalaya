@@ -173,7 +173,7 @@
                     </span>
                     <input type="email" class="form-control bg-light border-start-0 ps-0 @error('email') is-invalid @enderror" 
                            id="email" name="email" value="{{ old('email') }}" 
-                           placeholder="nama@email.com" required autofocus>
+                           placeholder="Masukan Email Anda" required autofocus>
                 </div>
             </div>
 
@@ -205,7 +205,6 @@
 
             <button type="submit" class="btn btn-submit w-100 py-2 rounded-2 d-flex align-items-center justify-content-center gap-2">
                 <span>Masuk ke Akun Anda</span>
-                <i class="bi bi-arrow-right" style="font-size: 0.82rem;"></i>
             </button>
         </form>
 
