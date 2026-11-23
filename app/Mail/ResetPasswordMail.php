@@ -45,3 +45,4 @@ class ResetPasswordMail extends Mailable
         );
     }
 }
+
