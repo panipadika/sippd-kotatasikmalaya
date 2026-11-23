@@ -220,6 +220,55 @@ class SeparateAuthPortalsTest extends TestCase
         $user->update(['username' => 'user', 'name' => 'Pengguna Profil Daerah']);
     }
 
+    public function test_superadmin_can_create_new_user_with_and_without_username()
+    {
+        $superadmin = User::where('role', 'super_admin')->first();
+
+        // 1. Tambah user biasa (tanpa username)
+        $responseUser = $this->actingAs($superadmin)->post('/users', [
+            'name' => 'Staf Baru Publik',
+            'username' => '',
+            'email' => 'stafpublik@datasektoral.go.id',
+            'password' => 'Password123!',
+            'role' => 'user',
+        ]);
+        $responseUser->assertSessionHas('success');
+        $this->assertDatabaseHas('users', [
+            'email' => 'stafpublik@datasektoral.go.id',
+            'role' => 'user',
+            'is_active' => true,
+        ]);
+
+        // 2. Tambah admin baru (dengan username spesifik)
+        $responseAdmin = $this->actingAs($superadmin)->post('/users', [
+            'name' => 'Admin Baru Sektoral',
+            'username' => 'admin_baru',
+            'email' => 'adminbaru@datasektoral.go.id',
+            'password' => 'Password123!',
+            'role' => 'admin',
+        ]);
+        $responseAdmin->assertSessionHas('success');
+        $this->assertDatabaseHas('users', [
+            'email' => 'adminbaru@datasektoral.go.id',
+            'username' => 'admin_baru',
+            'role' => 'admin',
+        ]);
+
+        // 3. Tambah admin baru tanpa username (auto-generated)
+        $responseAuto = $this->actingAs($superadmin)->post('/users', [
+            'name' => 'Budi Santoso',
+            'username' => '',
+            'email' => 'budisantoso@datasektoral.go.id',
+            'password' => 'Password123!',
+            'role' => 'admin',
+        ]);
+        $responseAuto->assertSessionHas('success');
+        $this->assertDatabaseHas('users', [
+            'email' => 'budisantoso@datasektoral.go.id',
+            'username' => 'budi_santoso',
+        ]);
+    }
+
     public function test_logout_redirects_to_respective_portal_login()
     {
         $superadmin = User::where('username', 'superadmin')->first();

@@ -90,9 +90,6 @@
                                         </div>
                                         <div>
                                             <span class="fw-bold text-dark d-block">{{ $u->name }}</span>
-                                            @if($u->username)
-                                                <small class="badge bg-light text-secondary border font-monospace" style="font-size: 0.65rem;">@{{ $u->username }}</small>
-                                            @endif
                                             @if($u->id === auth()->id())
                                                 <small class="badge bg-light text-primary border" style="font-size: 0.65rem;">(Akun Anda Saat Ini)</small>
                                             @endif
@@ -275,6 +272,18 @@
                         title: 'Perhatian',
                         text: @json(session('error')),
                         confirmButtonText: 'Tutup',
+                        confirmButtonColor: '#dc2626'
+                    });
+                }
+            @endif
+
+            @if($errors->any())
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validasi Gagal',
+                        html: '<div class="text-start small"><ul class="mb-0 ps-3">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>',
+                        confirmButtonText: 'Periksa Kembali',
                         confirmButtonColor: '#dc2626'
                     });
                 }

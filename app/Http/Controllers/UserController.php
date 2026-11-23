@@ -38,7 +38,7 @@ class UserController extends Controller
 
         $username = $validated['username'] ?? null;
         if (empty($username) && in_array($validated['role'], ['super_admin', 'admin'])) {
-            $base = strtolower(preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', $validated['name'])));
+            $base = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', str_replace(' ', '_', $validated['name'])));
             $username = $base ?: $validated['role'];
             $counter = 1;
             while (User::where('username', $username)->exists()) {
@@ -90,8 +90,8 @@ class UserController extends Controller
         }
 
         $user->name = $validated['name'];
-        if (isset($validated['username'])) {
-            $user->username = $validated['username'];
+        if (array_key_exists('username', $validated)) {
+            $user->username = !empty($validated['username']) ? $validated['username'] : null;
         }
         $user->email = $validated['email'];
         $user->role = $validated['role'];
