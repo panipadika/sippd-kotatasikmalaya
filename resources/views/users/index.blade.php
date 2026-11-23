@@ -148,7 +148,7 @@
 <div class="modal fade" id="modalTambahUser" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content border-0 shadow">
-            <form method="POST" action="{{ route('users.store') }}">
+            <form method="POST" action="{{ route('users.store') }}" data-no-spa="true">
                 @csrf
                 <div class="modal-header bg-slate-900 text-white">
                     <h6 class="modal-title fw-bold"><i class="bi bi-person-plus me-1"></i> Tambah Pengguna Baru</h6>
@@ -161,8 +161,9 @@
                             <input type="text" name="name" class="form-control" required placeholder="Nama pegawai...">
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label small fw-semibold">Username Login <span class="text-muted fw-normal">(Admin)</span></label>
+                            <label class="form-label small fw-semibold">Username <span class="text-muted fw-normal">(Opsional)</span></label>
                             <input type="text" name="username" class="form-control font-monospace" placeholder="Otomatis dari nama">
+                            <div class="form-text small" style="font-size: 0.72rem;">Login sistem menggunakan Alamat Email.</div>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -197,7 +198,7 @@
 <div class="modal fade" id="modalEditUser" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content border-0 shadow">
-            <form method="POST" id="formEditUser" action="">
+            <form method="POST" id="formEditUser" action="" data-no-spa="true">
                 @csrf
                 @method('PUT')
                 <div class="modal-header bg-slate-900 text-white">
@@ -211,8 +212,9 @@
                             <input type="text" name="name" id="editUserName" class="form-control" required>
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label small fw-semibold">Username Login</label>
-                            <input type="text" name="username" id="editUserUsername" class="form-control font-monospace" placeholder="username_login">
+                            <label class="form-label small fw-semibold">Username <span class="text-muted fw-normal">(Identitas)</span></label>
+                            <input type="text" name="username" id="editUserUsername" class="form-control font-monospace" placeholder="username_akun">
+                            <div class="form-text small" style="font-size: 0.72rem;">Login sistem menggunakan Alamat Email.</div>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -250,29 +252,41 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        @if(session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: @json(session('success')),
-                confirmButtonText: 'Tutup',
-                confirmButtonColor: '#0d9488',
-                timer: 3500,
-                timerProgressBar: true
-            });
-        @endif
+    (function () {
+        function initUsers() {
+            @if(session('success'))
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: @json(session('success')),
+                        confirmButtonText: 'Tutup',
+                        confirmButtonColor: '#0d9488',
+                        timer: 3500,
+                        timerProgressBar: true
+                    });
+                }
+            @endif
 
-        @if(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Perhatian',
-                text: @json(session('error')),
-                confirmButtonText: 'Tutup',
-                confirmButtonColor: '#dc2626'
-            });
-        @endif
-    });
+            @if(session('error'))
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Perhatian',
+                        text: @json(session('error')),
+                        confirmButtonText: 'Tutup',
+                        confirmButtonColor: '#dc2626'
+                    });
+                }
+            @endif
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initUsers);
+        } else {
+            initUsers();
+        }
+    })();
 
     function openEditUserModal(id, name, username, email, role, isActive) {
         document.getElementById('formEditUser').action = '/users/' + id;

@@ -203,9 +203,8 @@
 
             <button type="submit" class="btn btn-submit w-100 py-2 rounded-2 d-flex align-items-center justify-content-center gap-2">
                 <span>Masuk sebagai Admin</span>
-                <i class="bi bi-arrow-right" style="font-size: 0.82rem;"></i>
             </button>
-        </form>
+        </form> 
 
         <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 text-center">
             <span class="d-block small" style="color: #64748b; font-size: 0.72rem;">

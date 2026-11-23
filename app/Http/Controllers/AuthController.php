@@ -295,10 +295,14 @@ class AuthController extends Controller
         $messages['email.required'] = 'Alamat email wajib diisi.';
         $messages['email.unique'] = 'Email sudah digunakan oleh akun lain.';
 
-        // Admin/Super Admin can update username
+        // Validasi username untuk semua peran (wajib untuk admin/superadmin, opsional untuk user biasa)
         if ($user->isAdmin()) {
             $rules['username'] = 'required|string|max:255|alpha_dash|unique:users,username,' . $user->id;
             $messages['username.required'] = 'Username wajib diisi.';
+            $messages['username.unique'] = 'Username sudah digunakan oleh akun lain.';
+            $messages['username.alpha_dash'] = 'Username hanya boleh berisi huruf, angka, dash, dan underscore.';
+        } else {
+            $rules['username'] = 'nullable|string|max:255|alpha_dash|unique:users,username,' . $user->id;
             $messages['username.unique'] = 'Username sudah digunakan oleh akun lain.';
             $messages['username.alpha_dash'] = 'Username hanya boleh berisi huruf, angka, dash, dan underscore.';
         }
@@ -308,8 +312,8 @@ class AuthController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
 
-        if ($user->isAdmin() && $request->filled('username')) {
-            $user->username = $request->username;
+        if ($request->has('username')) {
+            $user->username = $request->filled('username') ? $request->username : null;
         }
 
         $passwordChanged = false;
@@ -340,6 +344,14 @@ class AuthController extends Controller
             : 'Profil berhasil diperbarui!';
 
         ActivityLog::record('update_profile', 'Memperbarui profil pengguna' . (!empty($updatedParts) ? ' (' . implode(', ', $updatedParts) . ')' : ''));
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'redirect_url' => route('profile'),
+            ]);
+        }
 
         return back()->with('success', $message);
     }

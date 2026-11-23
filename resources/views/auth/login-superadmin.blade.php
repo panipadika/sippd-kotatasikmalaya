@@ -203,7 +203,6 @@
 
             <button type="submit" class="btn btn-submit w-100 py-2 rounded-2 d-flex align-items-center justify-content-center gap-2">
                 <span>Masuk sebagai Super Admin</span>
-                <i class="bi bi-arrow-right" style="font-size: 0.82rem;"></i>
             </button>
         </form>
 

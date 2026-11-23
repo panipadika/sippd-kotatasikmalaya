@@ -199,6 +199,27 @@ class SeparateAuthPortalsTest extends TestCase
         $admin->update(['username' => 'admin', 'name' => 'Administrator Data Sektoral']);
     }
 
+    public function test_regular_user_can_update_profile_and_username()
+    {
+        $user = User::where('role', 'user')->first();
+
+        $response = $this->actingAs($user)->put('/profil', [
+            'name' => 'User Updated Name',
+            'username' => 'user_custom_handle',
+            'email' => 'user@datasektoral.go.id',
+        ]);
+
+        $response->assertSessionHas('success');
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'User Updated Name',
+            'username' => 'user_custom_handle',
+        ]);
+
+        // Reset
+        $user->update(['username' => 'user', 'name' => 'Pengguna Profil Daerah']);
+    }
+
     public function test_logout_redirects_to_respective_portal_login()
     {
         $superadmin = User::where('username', 'superadmin')->first();

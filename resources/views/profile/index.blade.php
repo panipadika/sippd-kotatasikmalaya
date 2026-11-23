@@ -20,7 +20,7 @@
 
     <div class="card border-0 shadow-xs mb-0">
         <div class="card-body p-3">
-            <form method="POST" action="{{ route('profile.update') }}">
+            <form method="POST" action="{{ route('profile.update') }}" data-no-spa="true">
                 @csrf
                 @method('PUT')
 
@@ -44,13 +44,36 @@
                     <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
                 </div>
 
-                @if($user->isAdmin())
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold">Username <span class="text-danger">*</span></label>
-                    <input type="text" name="username" class="form-control font-monospace" value="{{ old('username', $user->username) }}" required placeholder="username_login">
-                    <div class="form-text small" style="font-size: 0.75rem;">Username digunakan untuk masuk ke portal {{ $user->isSuperAdmin() ? 'Super Admin' : 'Admin' }}.</div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-semibold mb-0">
+                            Username
+                            @if($user->isAdmin())
+                                <span class="text-danger">*</span>
+                            @else
+                                <span class="text-muted fw-normal">(Opsional)</span>
+                            @endif
+                        </label>
+                        <span class="badge bg-light text-secondary border font-monospace" style="font-size: 0.68rem;">
+                            Masuk via Email
+                        </span>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted border-end-0">
+                            <i class="bi bi-at"></i>
+                        </span>
+                        <input type="text" name="username" class="form-control font-monospace border-start-0 ps-0 @error('username') is-invalid @enderror" 
+                               value="{{ old('username', $user->username) }}" 
+                               placeholder="username_akun"
+                               {{ $user->isAdmin() ? 'required' : '' }}>
+                    </div>
+                    @error('username')
+                        <div class="invalid-feedback d-block small mt-1">{{ $message }}</div>
+                    @enderror
+                    <div class="form-text small text-muted mt-1" style="font-size: 0.74rem;">
+                        Username sebagai identitas akun unik di sistem. Masuk/login ke sistem tetap menggunakan <strong>Alamat Email</strong>.
+                    </div>
                 </div>
-                @endif
 
                 <div class="mb-3">
                     <label class="form-label small fw-semibold">Alamat Email <span class="text-danger">*</span></label>
@@ -111,59 +134,73 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Toggle Password Visibility
-        document.querySelectorAll('.btn-toggle-pw').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                var targetId = this.getAttribute('data-target');
-                var input = document.getElementById(targetId);
-                var icon = this.querySelector('i');
-                if (!input) return;
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.classList.remove('bi-eye');
-                    icon.classList.add('bi-eye-slash');
-                } else {
-                    input.type = 'password';
-                    icon.classList.remove('bi-eye-slash');
-                    icon.classList.add('bi-eye');
-                }
+    (function () {
+        function initProfile() {
+            // Toggle Password Visibility
+            document.querySelectorAll('.btn-toggle-pw').forEach(function(btn) {
+                if (btn.dataset.bound) return;
+                btn.dataset.bound = 'true';
+                btn.addEventListener('click', function() {
+                    var targetId = this.getAttribute('data-target');
+                    var input = document.getElementById(targetId);
+                    var icon = this.querySelector('i');
+                    if (!input) return;
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('bi-eye');
+                        icon.classList.add('bi-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('bi-eye-slash');
+                        icon.classList.add('bi-eye');
+                    }
+                });
             });
-        });
 
-        // Popup Berhasil Memperbarui Profil
-        @if(session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Pembaruan Berhasil!',
-                text: @json(session('success')),
-                confirmButtonText: '<i class="bi bi-check2-circle me-1"></i> Selesai',
-                confirmButtonColor: '#0d9488',
-                timer: 4000,
-                timerProgressBar: true,
-                customClass: {
-                    popup: 'rounded-4 shadow-lg border-0 p-3',
-                    title: 'fw-bold fs-5 text-slate-900',
-                    confirmButton: 'btn btn-primary px-4 py-2 rounded-2 fw-semibold shadow-xs'
+            // Popup Berhasil Memperbarui Profil
+            @if(session('success'))
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Pembaruan Berhasil!',
+                        text: @json(session('success')),
+                        confirmButtonText: '<i class="bi bi-check2-circle me-1"></i> Selesai',
+                        confirmButtonColor: '#0d9488',
+                        timer: 4500,
+                        timerProgressBar: true,
+                        customClass: {
+                            popup: 'rounded-4 shadow-lg border-0 p-3',
+                            title: 'fw-bold fs-5 text-slate-900',
+                            confirmButton: 'btn btn-primary px-4 py-2 rounded-2 fw-semibold shadow-xs'
+                        }
+                    });
                 }
-            });
-        @endif
+            @endif
 
-        // Popup Error Validasi
-        @if($errors->any())
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Memperbarui Profil',
-                html: '<div class="text-start small"><ul class="mb-0 ps-3">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>',
-                confirmButtonText: 'Periksa Kembali',
-                confirmButtonColor: '#dc2626',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg border-0 p-3',
-                    title: 'fw-bold fs-5 text-danger',
-                    confirmButton: 'btn btn-danger px-4 py-2 rounded-2 fw-semibold shadow-xs'
+            // Popup Error Validasi
+            @if($errors->any())
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Memperbarui Profil',
+                        html: '<div class="text-start small"><ul class="mb-0 ps-3">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>',
+                        confirmButtonText: 'Periksa Kembali',
+                        confirmButtonColor: '#dc2626',
+                        customClass: {
+                            popup: 'rounded-4 shadow-lg border-0 p-3',
+                            title: 'fw-bold fs-5 text-danger',
+                            confirmButton: 'btn btn-danger px-4 py-2 rounded-2 fw-semibold shadow-xs'
+                        }
+                    });
                 }
-            });
-        @endif
-    });
+            @endif
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initProfile);
+        } else {
+            initProfile();
+        }
+    })();
 </script>
 @endpush
